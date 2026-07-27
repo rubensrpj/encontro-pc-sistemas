@@ -15,7 +15,7 @@
 
 /* ----------------------------- configuração ----------------------------- */
 
-const TOKEN = 'PCS-2026-TROQUE-ISTO';   // troque. Vai aparecer no código da página.
+const TOKEN = '24683de1a919f21105a56c471044bbf5';   // troque. Vai aparecer no código da página.
 
 const ABA_REGISTROS = 'Registros';
 const ABA_PESSOAS = 'Pessoas';

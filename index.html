@@ -122,9 +122,14 @@ textarea{resize:vertical;min-height:76px}
 .add{width:100%;padding:13px;border-radius:10px;cursor:pointer;font:600 14.5px 'Montserrat',sans-serif;
   border:2px dashed var(--azul-marca);background:rgba(27,78,155,.07);color:var(--azul-marca)}
 .add:hover{background:rgba(27,78,155,.14)}
-.total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:2px solid var(--papel-borda)}
-.total .rot{font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca)}
-.total .val{font-weight:800;font-size:35px;color:var(--azul-marca);letter-spacing:-.02em}
+.valores{margin-top:20px;padding-top:16px;border-top:2px solid var(--papel-borda)}
+.valores .rot{font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca)}
+.valores ul{list-style:none;margin:12px 0 0;padding:0}
+.valores li{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--papel-borda)}
+.valores li:last-child{border-bottom:none}
+.valores .quem{font-weight:600;font-size:15px}
+.valores .quem small{display:block;font-weight:500;font-size:12.5px;color:var(--tinta-fraca);margin-top:2px}
+.valores .quanto{font-weight:800;font-size:21px;color:var(--azul-marca);letter-spacing:-.02em;white-space:nowrap}
 .btn{width:auto;cursor:pointer;border:none;border-radius:999px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;
   padding:14px 30px;transition:transform .14s,filter .14s,background .14s}
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -189,16 +194,19 @@ textarea{resize:vertical;min-height:76px}
          deste arquivo como logo-pc.png e preencher LOGO_URL no script.
          Sem isso, entra a reconstrução abaixo (aproximação, não é o arquivo oficial). -->
     <div class="logo" id="logo">
-      <svg viewBox="0 0 300 150" aria-label="PC Sistemas">
-        <path d="M150 14a58 58 0 0 1 0 116" fill="none" stroke="#1B4E9B" stroke-width="9" stroke-linecap="round" opacity=".95"/>
-        <path d="M132 22a70 70 0 0 1 46 22" fill="none" stroke="#1B4E9B" stroke-width="5" stroke-linecap="round" opacity=".75"/>
-        <text x="30" y="106" font-family="Montserrat, sans-serif" font-weight="800" font-size="96" fill="#153B7A">P</text>
-        <rect x="30" y="72" width="62" height="36" fill="#2A62B8" opacity=".85" style="mix-blend-mode:multiply"/>
-        <text x="98" y="106" font-family="Montserrat, sans-serif" font-weight="800" font-size="96" fill="#E87B23">C</text>
-        <text x="222" y="42" font-family="Montserrat, sans-serif" font-weight="600" font-size="20" fill="#1B4E9B">®</text>
-        <text x="34" y="140" font-family="Montserrat, sans-serif" font-weight="700" font-size="20" letter-spacing="10" fill="#1B4E9B">SISTEMA</text>
-        <circle cx="212" cy="133" r="13" fill="#1B4E9B"/>
-        <text x="205" y="140" font-family="Montserrat, sans-serif" font-weight="700" font-size="19" fill="#F2EDE3">S</text>
+      <svg viewBox="0 0 300 178" aria-label="PC Sistemas">
+        <!-- arco: fica contido acima da linha da palavra SISTEMAS -->
+        <path d="M150 6a58 58 0 0 1 0 116" fill="none" stroke="#1B4E9B" stroke-width="9" stroke-linecap="round"/>
+        <path d="M124 12a70 70 0 0 1 48 20" fill="none" stroke="#1B4E9B" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+        <text x="36" y="104" font-family="Montserrat, sans-serif" font-weight="800" font-size="96" fill="#153B7A">P</text>
+        <text x="104" y="104" font-family="Montserrat, sans-serif" font-weight="800" font-size="96" fill="#E87B23">C</text>
+        <text x="234" y="42" font-family="Montserrat, sans-serif" font-weight="600" font-size="19" fill="#1B4E9B">®</text>
+        <!-- textLength trava a largura, então a fonte carregada não desloca o S do círculo -->
+        <text x="36" y="154" textLength="176" lengthAdjust="spacing"
+              font-family="Montserrat, sans-serif" font-weight="700" font-size="21" fill="#1B4E9B">SISTEMA</text>
+        <circle cx="228" cy="147" r="13.5" fill="#1B4E9B"/>
+        <text x="228" y="154" text-anchor="middle" font-family="Montserrat, sans-serif"
+              font-weight="700" font-size="19" fill="#F2EDE3">S</text>
       </svg>
     </div>
 
@@ -284,12 +292,10 @@ textarea{resize:vertical;min-height:76px}
           <textarea id="recado" placeholder="Restrição alimentar, chego mais tarde, levo o violão..."></textarea>
         </div>
 
-        <div class="total">
-          <div>
-            <div class="rot">Total da sua mesa</div>
-            <div class="dica" id="avisoCrianca" hidden>Valor de criança ainda não definido no convite — a organização combina com você.</div>
-          </div>
-          <div class="val" id="total">R$ 0,00</div>
+        <div class="valores">
+          <div class="rot">Valor por pessoa</div>
+          <ul id="listaValores"></ul>
+          <div class="dica" id="avisoCrianca" hidden>Valor de criança ainda não definido no convite — a organização combina com você.</div>
         </div>
 
         <div class="acoes">
@@ -318,8 +324,8 @@ textarea{resize:vertical;min-height:76px}
 
 <script>
 /* ----------------------------- configuração ----------------------------- */
-const API_URL  = 'COLE_AQUI_A_URL_/exec_DO_APPS_SCRIPT';
-const TOKEN    = 'PCS-2026-TROQUE-ISTO';   // igual ao TOKEN do Apps Script
+const API_URL  = 'https://script.google.com/macros/s/AKfycbz58pemi2Eg7umXaxCGLwhszZAl_4YVakbYOVfzl5-XeDIEUL07ipuRk7MwBpTJMFPn/exec';
+const TOKEN    = '9f2c71ae4d0b83e6c5127ab0f4d99e31';   // igual ao TOKEN do Apps Script
 const LOGO_URL = '';                       // ex.: 'logo-pc.png' — usa o arquivo oficial se preenchido
 
 if (LOGO_URL) {
@@ -412,7 +418,7 @@ function renderDeps(){
 
 $('listaDeps').addEventListener('input', (ev)=>{
   const t = ev.target;
-  if(t.dataset.nome !== undefined) deps[+t.dataset.nome].nome = t.value;
+  if(t.dataset.nome !== undefined){ deps[+t.dataset.nome].nome = t.value; calcularTotal(); }
   if(t.dataset.tipo !== undefined) deps[+t.dataset.tipo].tipo = t.value;
   if(t.dataset.combo !== undefined){ deps[+t.dataset.combo].combo = t.value; calcularTotal(); }
 });
@@ -426,12 +432,31 @@ $('btnAdd').addEventListener('click', ()=>{
 });
 
 function calcularTotal(){
-  const soma = deps.reduce((s,d)=> s + (COMBOS[d.combo]||COMBOS.feijoada).valor,
-                           (COMBOS[$('combo').value]||COMBOS.feijoada).valor);
-  $('total').textContent = reais(soma);
+  const pessoas = [{ nome: $('nome').value.trim() || 'Você', combo: $('combo').value }]
+    .concat(deps.map(d => ({ nome: d.nome.trim() || 'Acompanhante', combo: d.combo })));
+
+  const lista = $('listaValores');
+  lista.innerHTML = '';
+  pessoas.forEach(p=>{
+    const c = COMBOS[p.combo] || COMBOS.feijoada;
+    const li = document.createElement('li');
+    const quem = document.createElement('div');
+    quem.className = 'quem';
+    quem.textContent = p.nome;
+    const detalhe = document.createElement('small');
+    detalhe.textContent = c.rotulo;
+    quem.appendChild(detalhe);
+    const quanto = document.createElement('div');
+    quanto.className = 'quanto';
+    quanto.textContent = c.valor ? reais(c.valor) : 'a combinar';
+    li.appendChild(quem); li.appendChild(quanto);
+    lista.appendChild(li);
+  });
+
   $('avisoCrianca').hidden = !deps.some(d=>d.combo==='crianca');
 }
 $('combo').addEventListener('change', calcularTotal);
+$('nome').addEventListener('input', calcularTotal);
 
 /* -------------------------------- mural -------------------------------- */
 function renderMural(lista){
