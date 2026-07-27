@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1º Encontro de ex-funcionários da PC Sistemas</title>
+<meta name="description" content="Confirme sua presença no primeiro grande encontro de ex-funcionários da PC Sistemas. 22.08.2026, 12h, Belga Pub, Goiânia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Paleta amostrada do convite */
+:root{
+  --azul-fundo:#17408E;      /* fundo azul do cartaz */
+  --azul-fundo-esc:#0F2E69;
+  --azul-marca:#1B4E9B;      /* azul do logotipo e dos títulos */
+  --azul-escuro:#153B7A;
+  --laranja:#E87B23;         /* laranja do logotipo e do "ENCONTRO" */
+  --papel:#F2EDE3;
+  --papel-som:#E4DACA;       /* sombra/vinco do papel */
+  --papel-borda:#E0D5C1;
+  --tinta:#2A3340;
+  --tinta-fraca:#6B7280;
+  --postit-am:#FBE08B;
+  --postit-az:#A6D1EC;
+  --fita:rgba(226,212,181,.92);
+  --erro:#C2341F;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:26px 12px 64px; min-height:100vh;
+  background:linear-gradient(180deg,#1A4697 0%,var(--azul-fundo) 45%,#102E6B 100%);
+  font-family:'Montserrat',ui-sans-serif,system-ui,sans-serif; color:var(--tinta);
+}
+
+/* pilha de folhas, como no cartaz */
+.palco{max-width:960px;margin:0 auto;position:relative}
+.palco::before,.palco::after{
+  content:'';position:absolute;inset:0;border-radius:5px;background:#EDE6D9;
+  box-shadow:0 12px 30px -18px rgba(0,0,0,.7);
+}
+.palco::before{transform:rotate(-.9deg) translate(-9px,7px);background:#E8E0D0}
+.palco::after{transform:rotate(.7deg) translate(8px,4px);background:#EFE8DB}
+.folha{
+  position:relative;z-index:2;background:var(--papel);border-radius:5px;overflow:hidden;
+  box-shadow:0 34px 76px -32px rgba(0,0,0,.8);
+  padding:clamp(28px,5vw,58px) clamp(18px,4.5vw,58px) 48px;
+}
+.folha::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(130% 65% at 50% -12%,rgba(255,255,255,.75),transparent 58%)}
+.camada{position:relative;z-index:2}
+
+/* rabiscos do cartaz */
+.rabisco{position:absolute;pointer-events:none;opacity:.55;z-index:1}
+.mancha{top:400px;left:-26px;width:120px;opacity:.35}
+.trio{top:250px;left:6px;width:82px}
+.seta{top:300px;right:-6px;width:70px}
+
+/* logotipo */
+.logo{display:flex;justify-content:center}
+.logo img{max-width:230px;height:auto}
+.logo svg{width:min(230px,58vw);height:auto}
+
+/* cabeçalho */
+.eyebrow{margin:26px 0 0;display:flex;align-items:center;justify-content:center;gap:16px;
+  font-weight:700;font-size:clamp(13px,2.6vw,17px);letter-spacing:.42em;text-transform:uppercase;color:var(--azul-marca)}
+.eyebrow::before,.eyebrow::after{content:'';width:36px;height:3px;background:var(--laranja);border-radius:2px}
+h1{text-align:center;margin:16px 0 0;line-height:.95;color:var(--azul-marca)}
+h1 .l1{display:block;font-weight:700;font-size:clamp(16px,3.4vw,26px);letter-spacing:.14em;text-transform:uppercase}
+h1 .l2{display:block;font-weight:800;font-size:clamp(50px,12.5vw,104px);color:var(--laranja);letter-spacing:-.02em;margin:4px 0}
+h1 .l3{display:block;font-family:'Caveat',cursive;font-weight:600;font-size:clamp(22px,4.6vw,34px);color:var(--azul-escuro);transform:rotate(-.6deg)}
+h1 .l4{display:block;font-weight:700;font-size:clamp(30px,7vw,56px);letter-spacing:-.01em;margin-top:2px}
+.marcas-lat{display:flex;align-items:center;justify-content:center;gap:14px}
+.tick{width:11px;height:26px;flex:none}
+.risco{display:block;width:min(340px,74%);height:12px;margin:6px auto 0;
+  background:radial-gradient(58% 100% at 50% 45%,var(--azul-marca),transparent 74%);opacity:.75;border-radius:99px}
+.lead{max-width:46ch;margin:22px auto 0;text-align:center;font-size:clamp(14.5px,2.3vw,17px);color:var(--tinta-fraca);line-height:1.65;font-weight:500}
+
+.faixa{display:flex;flex-wrap:wrap;justify-content:center;gap:0 30px;margin-top:32px;padding:20px 0;
+  border-top:2px solid var(--papel-borda);border-bottom:2px solid var(--papel-borda)}
+.info{text-align:center;padding:4px 12px;min-width:132px}
+.info .rot{font-weight:700;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--laranja)}
+.info .val{font-weight:800;font-size:23px;color:var(--azul-marca);margin-top:5px;letter-spacing:-.01em}
+.info .sub{font-size:12.5px;color:var(--tinta-fraca);margin-top:2px;font-weight:500}
+
+/* post-its */
+.postit{position:relative;padding:24px 18px 18px;border-radius:2px;color:var(--azul-escuro);
+  font-family:'Caveat',cursive;font-weight:700;line-height:1.12;box-shadow:3px 7px 15px -7px rgba(30,42,58,.6);
+  animation:colar .5s cubic-bezier(.2,.9,.3,1.5) both}
+.postit::before{content:'';position:absolute;top:-10px;left:50%;width:66px;height:21px;background:var(--fita);
+  transform:translateX(-50%) rotate(-3deg);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.postit.am{background:var(--postit-am)} .postit.az{background:var(--postit-az)}
+@keyframes colar{from{opacity:0;transform:translateY(-24px) rotate(-9deg) scale(.9)}}
+.bordoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(172px,1fr));gap:18px;margin-top:36px}
+.bordoes .postit{font-size:23px;text-align:center;display:flex;align-items:center;justify-content:center;min-height:108px}
+
+.secao{margin-top:46px}
+.secao h2{font-weight:800;font-size:clamp(22px,4.2vw,32px);color:var(--azul-marca);letter-spacing:-.02em;margin:0}
+.apoio{margin:7px 0 0;color:var(--tinta-fraca);font-size:14.5px;max-width:58ch;font-weight:500}
+.cardapio{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:20px}
+.item{border:2px solid var(--papel-borda);border-radius:12px;padding:16px;background:rgba(255,255,255,.5)}
+.item .nome{font-weight:600;font-size:15px}
+.item .preco{font-weight:800;font-size:27px;color:var(--laranja);margin-top:6px;letter-spacing:-.02em}
+.nota{margin-top:12px;font-size:13px;color:var(--tinta-fraca);font-weight:500}
+
+.form{margin-top:22px;background:rgba(255,255,255,.6);border:2px solid var(--papel-borda);border-radius:14px;padding:clamp(18px,3.4vw,28px)}
+.campo{margin-bottom:18px}
+.rotulo{display:block;font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca);margin-bottom:8px}
+input,select,textarea{width:100%;background:#FFFCF6;border:2px solid var(--papel-borda);border-radius:10px;
+  padding:12px 13px;font-size:16px;font-family:inherit;font-weight:500;color:var(--tinta);outline:none;transition:border-color .16s,box-shadow .16s}
+input::placeholder,textarea::placeholder{color:#A9A08F;font-weight:400}
+input:focus,select:focus,textarea:focus{border-color:var(--azul-marca);box-shadow:0 0 0 3px rgba(27,78,155,.18)}
+#tel{letter-spacing:.06em;font-variant-numeric:tabular-nums}
+textarea{resize:vertical;min-height:76px}
+.erro{color:var(--erro);font-size:13px;margin-top:6px;font-weight:600}
+.dica{color:var(--tinta-fraca);font-size:13px;margin-top:6px;font-weight:500}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pessoa{border:2px dashed var(--papel-borda);border-radius:12px;padding:14px;margin-bottom:10px;background:rgba(255,255,255,.45)}
+.pessoa-topo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.pessoa-topo span{font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--laranja)}
+.remover{border:none;background:none;color:var(--erro);cursor:pointer;font:600 13px 'Montserrat',sans-serif;text-decoration:underline;padding:2px 4px;width:auto}
+.add{width:100%;padding:13px;border-radius:10px;cursor:pointer;font:600 14.5px 'Montserrat',sans-serif;
+  border:2px dashed var(--azul-marca);background:rgba(27,78,155,.07);color:var(--azul-marca)}
+.add:hover{background:rgba(27,78,155,.14)}
+.total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:2px solid var(--papel-borda)}
+.total .rot{font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca)}
+.total .val{font-weight:800;font-size:35px;color:var(--azul-marca);letter-spacing:-.02em}
+.btn{width:auto;cursor:pointer;border:none;border-radius:999px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;
+  padding:14px 30px;transition:transform .14s,filter .14s,background .14s}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.primario{background:var(--laranja);color:#fff;box-shadow:0 10px 22px -12px rgba(232,123,35,.95)}
+.primario:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
+.fantasma{background:transparent;color:var(--azul-marca);border:2px solid var(--papel-borda)}
+.fantasma:hover:not(:disabled){background:rgba(27,78,155,.07)}
+.perigo{background:transparent;color:var(--erro);border:2px solid rgba(194,52,31,.35)}
+.acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center}
+.aviso{margin-top:18px;border-radius:12px;padding:13px 15px;font-size:13.5px;font-weight:500;
+  border:2px solid rgba(232,123,35,.35);background:rgba(232,123,35,.09)}
+
+.mural-topo{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.contador{font-weight:800;font-size:clamp(50px,12vw,84px);line-height:.9;color:var(--azul-marca);letter-spacing:-.04em}
+.contador-rot{font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca);margin-top:8px}
+.mural{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:18px;margin-top:26px}
+.mural .postit{min-height:122px;transition:transform .18s}
+.mural .postit:hover{transform:rotate(0) translateY(-4px) scale(1.03);z-index:3}
+.nome-cracha{font-size:23px;line-height:1.08}
+.extra-cracha{font:600 12px 'Montserrat',sans-serif;color:rgba(21,59,122,.72);margin-top:9px;line-height:1.35}
+.vazio{margin-top:24px;border:2px dashed var(--papel-borda);border-radius:14px;padding:32px;text-align:center;color:var(--tinta-fraca);font-weight:500}
+
+.carimbo{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none}
+.carimbo b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(38px,11vw,86px);letter-spacing:.04em;
+  color:rgba(194,52,31,.88);border:8px solid rgba(194,52,31,.88);border-radius:12px;padding:12px 28px;
+  transform:rotate(-13deg);animation:carimbar 1.35s ease-out forwards}
+@keyframes carimbar{0%{opacity:0;transform:rotate(-13deg) scale(2.4)}22%,72%{opacity:1;transform:rotate(-13deg) scale(1)}100%{opacity:0;transform:rotate(-13deg) scale(1.05)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:41;max-width:92vw;text-align:center;
+  background:var(--azul-marca);color:#FFF6E8;font-weight:600;font-size:14.5px;padding:13px 22px;border-radius:999px;
+  box-shadow:0 16px 36px -16px rgba(0,0,0,.8);animation:subir .3s ease-out both}
+.toast.erro{background:var(--erro)}
+@keyframes subir{from{opacity:0;transform:translate(-50%,16px)}}
+
+@media (prefers-reduced-motion:reduce){.postit,.toast,.carimbo b{animation:none!important}.carimbo{display:none}.btn:hover,.mural .postit:hover{transform:none!important}}
+@media (max-width:620px){.rabisco{display:none}}
+@media (max-width:560px){.dupla{grid-template-columns:1fr}.faixa{gap:0 12px}}
+</style>
+</head>
+<body>
+<div class="palco"><div class="folha">
+
+  <!-- rabiscos do cartaz -->
+  <svg class="rabisco trio" viewBox="0 0 100 80" fill="none" stroke="#3B6BB5" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+    <circle cx="26" cy="30" r="8"/><path d="M14 62c0-9 6-15 12-15s12 6 12 15"/>
+    <circle cx="50" cy="24" r="9"/><path d="M37 60c0-10 6-17 13-17s13 7 13 17"/>
+    <circle cx="74" cy="30" r="8"/><path d="M62 62c0-9 6-15 12-15s12 6 12 15"/>
+    <path d="M50 6v-5M38 9l-3-4M62 9l3-4"/>
+  </svg>
+  <svg class="rabisco seta" viewBox="0 0 60 110" fill="none" stroke="#3B6BB5" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+    <path d="M18 6c22 6 30 22 20 36-8 11-24 8-24-3 0-9 12-12 20-4 12 12 10 40-6 66"/>
+    <path d="M20 92l8 16 14-9"/>
+  </svg>
+  <svg class="mancha rabisco" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+    <ellipse cx="60" cy="50" rx="46" ry="38" fill="none" stroke="#CDB98F" stroke-width="7"/>
+    <ellipse cx="60" cy="50" rx="38" ry="30" fill="none" stroke="#DCCBA6" stroke-width="3"/>
+  </svg>
+
+  <div class="camada">
+
+    <!-- LOGOTIPO
+         Melhor caminho: exportar o logotipo oficial em PNG/SVG, salvar ao lado
+         deste arquivo como logo-pc.png e preencher LOGO_URL no script.
+         Sem isso, entra a reconstrução abaixo (aproximação, não é o arquivo oficial). -->
+    <div class="logo" id="logo">
+      <svg viewBox="0 0 300 150" aria-label="PC Sistemas">
+        <path d="M150 14a58 58 0 0 1 0 116" fill="none" stroke="#1B4E9B" stroke-width="9" stroke-linecap="round" opacity=".95"/>
+        <path d="M132 22a70 70 0 0 1 46 22" fill="none" stroke="#1B4E9B" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+        <text x="30" y="106" font-family="Montserrat, sans-serif" font-weight="800" font-size="96" fill="#153B7A">P</text>
+        <rect x="30" y="72" width="62" height="36" fill="#2A62B8" opacity=".85" style="mix-blend-mode:multiply"/>
+        <text x="98" y="106" font-family="Montserrat, sans-serif" font-weight="800" font-size="96" fill="#E87B23">C</text>
+        <text x="222" y="42" font-family="Montserrat, sans-serif" font-weight="600" font-size="20" fill="#1B4E9B">®</text>
+        <text x="34" y="140" font-family="Montserrat, sans-serif" font-weight="700" font-size="20" letter-spacing="10" fill="#1B4E9B">SISTEMA</text>
+        <circle cx="212" cy="133" r="13" fill="#1B4E9B"/>
+        <text x="205" y="140" font-family="Montserrat, sans-serif" font-weight="700" font-size="19" fill="#F2EDE3">S</text>
+      </svg>
+    </div>
+
+    <div class="eyebrow">Convite</div>
+    <h1>
+      <span class="l1">Primeiro grande</span>
+      <span class="l2">ENCONTRO</span>
+      <span class="l3">de ex funcionários da</span>
+      <span class="marcas-lat">
+        <svg class="tick" viewBox="0 0 11 26" fill="none" stroke="#1B4E9B" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M9 3L3 8M9 11L3 13M9 21L3 18"/>
+        </svg>
+        <span class="l4">PC Sistemas</span>
+        <svg class="tick" viewBox="0 0 11 26" fill="none" stroke="#1B4E9B" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M2 3l6 5M2 11l6 2M2 21l6-3"/>
+        </svg>
+      </span>
+      <span class="risco"></span>
+    </h1>
+    <p class="lead">Um reencontro para reviver histórias, compartilhar memórias e celebrar tudo que vivemos juntos. O Belga Pub é nosso, só nosso, das 12h às 16h.</p>
+
+    <div class="faixa">
+      <div class="info"><div class="rot">Data</div><div class="val">22.08.2026</div><div class="sub">Sábado</div></div>
+      <div class="info"><div class="rot">Horário</div><div class="val">12h</div><div class="sub">até as 16h</div></div>
+      <div class="info"><div class="rot">Local</div><div class="val">Belga Pub</div><div class="sub">Jardim América — Goiânia, GO</div></div>
+    </div>
+
+    <div class="bordoes">
+      <div class="postit az" style="transform:rotate(-1.6deg)">Te vira, bicho!</div>
+      <div class="postit am" style="transform:rotate(1.4deg);animation-delay:90ms">Problema de um, problema de todos!</div>
+      <div class="postit am" style="transform:rotate(-1.6deg);animation-delay:180ms">Faz devagar que tô com pressa!</div>
+      <div class="postit az" style="transform:rotate(1.4deg);animation-delay:270ms">Uma vez PC, sempre PC</div>
+    </div>
+
+    <section class="secao">
+      <h2>O que está incluso</h2>
+      <p class="apoio">Escolha por pessoa. Os valores valem para consumo das 12h às 16h; outras bebidas entram em comanda individual.</p>
+      <div class="cardapio">
+        <div class="item"><div class="nome">Feijoada</div><div class="preco">R$ 50,00</div></div>
+        <div class="item"><div class="nome">Feijoada + caipirinha</div><div class="preco">R$ 80,00</div></div>
+        <div class="item"><div class="nome">Feijoada + cerveja</div><div class="preco">R$ 100,00</div></div>
+      </div>
+      <p class="nota">Evento exclusivo para ex-colaboradores da PC Sistemas, companheiros(as) e filhos.</p>
+    </section>
+
+    <section class="secao">
+      <h2 id="tituloForm">Confirme sua presença</h2>
+      <p class="apoio">O telefone identifica você. Confirmando de novo com o mesmo número, sua resposta anterior é substituída — nada duplica.</p>
+
+      <div class="form">
+        <div class="dupla">
+          <div class="campo">
+            <label class="rotulo" for="tel">Telefone com DDD</label>
+            <input id="tel" inputmode="numeric" placeholder="(62) 9 9999-9999" autocomplete="tel">
+            <div class="erro" id="erroTel" hidden></div>
+            <div class="dica" id="dicaTel" hidden>Este número já confirmou. Ajuste e salve.</div>
+          </div>
+          <div class="campo">
+            <label class="rotulo" for="nome">Seu nome completo</label>
+            <input id="nome" placeholder="Como o pessoal te conhece" autocomplete="name">
+            <div class="erro" id="erroNome" hidden></div>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label class="rotulo" for="combo">Seu combo</label>
+          <select id="combo">
+            <option value="feijoada">Feijoada — R$ 50,00</option>
+            <option value="caipirinha">Feijoada + caipirinha — R$ 80,00</option>
+            <option value="cerveja">Feijoada + cerveja — R$ 100,00</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label class="rotulo">Companheiro(a) e filhos</label>
+          <div id="listaDeps"></div>
+          <button class="add" id="btnAdd" type="button">+ Adicionar companheiro(a) ou filho(a)</button>
+          <div class="dica" id="dicaSozinho">Vindo sozinho(a)? Pode seguir direto.</div>
+        </div>
+
+        <div class="campo">
+          <label class="rotulo" for="recado">Recado para a organização (opcional)</label>
+          <textarea id="recado" placeholder="Restrição alimentar, chego mais tarde, levo o violão..."></textarea>
+        </div>
+
+        <div class="total">
+          <div>
+            <div class="rot">Total da sua mesa</div>
+            <div class="dica" id="avisoCrianca" hidden>Valor de criança ainda não definido no convite — a organização combina com você.</div>
+          </div>
+          <div class="val" id="total">R$ 0,00</div>
+        </div>
+
+        <div class="acoes">
+          <button class="btn primario" id="btnConfirmar" type="button">Confirmar presença</button>
+          <button class="btn perigo" id="btnCancelar" type="button" hidden>Cancelar minha presença</button>
+        </div>
+
+        <div class="aviso">Os nomes confirmados ficam visíveis no mural desta página. Telefone e recado só a organização vê na planilha.</div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="mural-topo">
+        <div>
+          <div class="contador" id="contador">0</div>
+          <div class="contador-rot" id="contadorRot">já confirmaram</div>
+        </div>
+        <button class="btn fantasma" id="btnRecarregar" type="button">Atualizar mural</button>
+      </div>
+      <div id="mural" class="mural" hidden></div>
+      <div id="vazio" class="vazio">Carregando o mural...</div>
+    </section>
+
+  </div>
+</div></div>
+
+<script>
+/* ----------------------------- configuração ----------------------------- */
+const API_URL  = 'COLE_AQUI_A_URL_/exec_DO_APPS_SCRIPT';
+const TOKEN    = 'PCS-2026-TROQUE-ISTO';   // igual ao TOKEN do Apps Script
+const LOGO_URL = '';                       // ex.: 'logo-pc.png' — usa o arquivo oficial se preenchido
+
+if (LOGO_URL) {
+  document.getElementById('logo').innerHTML =
+    '<img src="' + LOGO_URL + '" alt="PC Sistemas">';
+}
+
+const COMBOS = {
+  feijoada:   { rotulo:'Feijoada',                   curto:'Feijoada',      valor:50  },
+  caipirinha: { rotulo:'Feijoada + caipirinha',      curto:'+ caipirinha',  valor:80  },
+  cerveja:    { rotulo:'Feijoada + cerveja',         curto:'+ cerveja',     valor:100 },
+  crianca:    { rotulo:'Criança — valor a combinar', curto:'Criança',       valor:0   }
+};
+
+/* ------------------------------- estado -------------------------------- */
+let deps = [];
+let ocupado = false;
+const $ = (id) => document.getElementById(id);
+
+/* ------------------------------ utilidades ------------------------------ */
+const soDigitos = (v) => (v||'').replace(/\D/g,'');
+const reais = (n) => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const primeiroNome = (n) => (n||'').trim().split(/\s+/)[0] || '';
+
+function formatarTelefone(v){
+  const d = soDigitos(v).slice(0,11);
+  if(d.length<=2) return d;
+  if(d.length<=6) return '('+d.slice(0,2)+') '+d.slice(2);
+  if(d.length<=10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
+  return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+}
+const telefoneValido = (v) => [10,11].includes(soDigitos(v).length);
+
+function avisar(texto, tipo){
+  const el = document.createElement('div');
+  el.className = 'toast' + (tipo==='erro' ? ' erro' : '');
+  el.setAttribute('role','status');
+  el.textContent = texto;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 4200);
+}
+function carimbar(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const el = document.createElement('div');
+  el.className = 'carimbo'; el.innerHTML = '<b>CONFIRMADO</b>'; el.setAttribute('aria-hidden','true');
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1500);
+}
+
+/* -------------------------------- API ---------------------------------- */
+/* Sem cabeçalhos personalizados: o corpo vai como texto puro, o que evita a
+   verificação prévia (preflight OPTIONS) que o Apps Script não responde. */
+async function api(acao, dados){
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify(Object.assign({ acao, token: TOKEN }, dados || {}))
+  });
+  const json = await resp.json();
+  if(!json.ok) throw new Error(json.erro || 'Falha na comunicação.');
+  return json;
+}
+
+/* ----------------------------- acompanhantes ---------------------------- */
+function renderDeps(){
+  const alvo = $('listaDeps');
+  alvo.innerHTML = '';
+  deps.forEach((d,i)=>{
+    const bloco = document.createElement('div');
+    bloco.className = 'pessoa';
+    bloco.innerHTML =
+      '<div class="pessoa-topo"><span>Acompanhante '+(i+1)+'</span>'+
+      '<button class="remover" type="button" data-rm="'+i+'">remover</button></div>'+
+      '<input placeholder="Nome" data-nome="'+i+'" style="margin-bottom:10px">'+
+      '<div class="dupla">'+
+        '<select data-tipo="'+i+'">'+
+          '<option value="companheiro"'+(d.tipo==='companheiro'?' selected':'')+'>Companheiro(a)</option>'+
+          '<option value="filho"'+(d.tipo==='filho'?' selected':'')+'>Filho(a)</option>'+
+        '</select>'+
+        '<select data-combo="'+i+'">'+
+          Object.keys(COMBOS).map(k=>'<option value="'+k+'"'+(d.combo===k?' selected':'')+'>'+
+            COMBOS[k].curto + (COMBOS[k].valor ? ' — '+reais(COMBOS[k].valor) : '') + '</option>').join('')+
+        '</select>'+
+      '</div>';
+    alvo.appendChild(bloco);
+    bloco.querySelector('[data-nome]').value = d.nome;   // sem interpolar em HTML
+  });
+  $('dicaSozinho').hidden = deps.length > 0;
+  calcularTotal();
+}
+
+$('listaDeps').addEventListener('input', (ev)=>{
+  const t = ev.target;
+  if(t.dataset.nome !== undefined) deps[+t.dataset.nome].nome = t.value;
+  if(t.dataset.tipo !== undefined) deps[+t.dataset.tipo].tipo = t.value;
+  if(t.dataset.combo !== undefined){ deps[+t.dataset.combo].combo = t.value; calcularTotal(); }
+});
+$('listaDeps').addEventListener('click', (ev)=>{
+  const i = ev.target.dataset.rm;
+  if(i !== undefined){ deps.splice(+i,1); renderDeps(); }
+});
+$('btnAdd').addEventListener('click', ()=>{
+  deps.push({ nome:'', tipo:'companheiro', combo:'feijoada' });
+  renderDeps();
+});
+
+function calcularTotal(){
+  const soma = deps.reduce((s,d)=> s + (COMBOS[d.combo]||COMBOS.feijoada).valor,
+                           (COMBOS[$('combo').value]||COMBOS.feijoada).valor);
+  $('total').textContent = reais(soma);
+  $('avisoCrianca').hidden = !deps.some(d=>d.combo==='crianca');
+}
+$('combo').addEventListener('change', calcularTotal);
+
+/* -------------------------------- mural -------------------------------- */
+function renderMural(lista){
+  const mural = $('mural'), vazio = $('vazio');
+  $('contador').textContent = lista.reduce((s,r)=>s+r.pessoas, 0);
+  $('contadorRot').textContent = 'já confirmaram · ' + lista.length + ' telefone' + (lista.length===1?'':'s');
+
+  if(!lista.length){
+    mural.hidden = true; vazio.hidden = false;
+    vazio.textContent = 'Nenhum recado no mural ainda. Cole o primeiro.';
+    return;
+  }
+  vazio.hidden = true; mural.hidden = false;
+  mural.innerHTML = '';
+  lista.forEach((r,i)=>{
+    const el = document.createElement('div');
+    el.className = 'postit ' + (r.par === 0 ? 'am' : 'az');
+    el.style.transform = 'rotate(' + ((i % 4) - 1.5) + 'deg)';
+    el.style.animationDelay = (Math.min(i,14)*55) + 'ms';
+    const nome = document.createElement('div');
+    nome.className = 'nome-cracha'; nome.textContent = r.nome;
+    const extra = document.createElement('div');
+    extra.className = 'extra-cracha';
+    extra.textContent = r.acompanhantes.length ? r.acompanhantes.join(', ') : 'vem sozinho(a)';
+    const caixa = document.createElement('div');
+    caixa.appendChild(nome); caixa.appendChild(extra);
+    el.appendChild(caixa);
+    mural.appendChild(el);
+  });
+}
+
+async function carregarMural(){
+  try{
+    const r = await api('listar');
+    renderMural(r.mural);
+  }catch(err){
+    $('vazio').textContent = 'Não foi possível carregar o mural: ' + err.message;
+  }
+}
+$('btnRecarregar').addEventListener('click', async ()=>{
+  $('btnRecarregar').disabled = true;
+  await carregarMural();
+  $('btnRecarregar').disabled = false;
+  avisar('Mural atualizado.');
+});
+
+/* ------------------------ consulta por telefone ------------------------ */
+let debounce;
+$('tel').addEventListener('input', (ev)=>{
+  ev.target.value = formatarTelefone(ev.target.value);
+  clearTimeout(debounce);
+  const bruto = soDigitos(ev.target.value);
+  if(!telefoneValido(bruto)){ marcarNovo(); return; }
+  debounce = setTimeout(()=>consultar(bruto), 350);
+});
+
+function marcarNovo(){
+  $('dicaTel').hidden = true;
+  $('btnCancelar').hidden = true;
+  $('btnConfirmar').textContent = 'Confirmar presença';
+  $('tituloForm').textContent = 'Confirme sua presença';
+}
+
+async function consultar(telefone){
+  try{
+    const r = await api('consultar', { telefone });
+    if(r.registro){
+      $('nome').value = r.registro.nome || '';
+      $('combo').value = COMBOS[r.registro.combo] ? r.registro.combo : 'feijoada';
+      deps = (r.registro.dependentes || []).map(d=>({ nome:d.nome, tipo:d.tipo, combo:d.combo }));
+      $('recado').value = r.registro.recado || '';
+      $('dicaTel').hidden = false;
+      $('btnCancelar').hidden = false;
+      $('btnConfirmar').textContent = 'Atualizar confirmação';
+      $('tituloForm').textContent = 'Sua confirmação';
+      renderDeps();
+    } else {
+      marcarNovo();
+    }
+  }catch(err){ /* consulta é conveniência: falha não bloqueia o envio */ }
+}
+
+/* ------------------------------ confirmar ------------------------------ */
+function validar(){
+  let ok = true;
+  const tel = soDigitos($('tel').value);
+  $('erroTel').hidden = telefoneValido(tel);
+  if(!telefoneValido(tel)){ $('erroTel').textContent = 'Informe DDD + número, 10 ou 11 dígitos.'; ok = false; }
+  const nome = $('nome').value.trim();
+  $('erroNome').hidden = nome.length >= 3;
+  if(nome.length < 3){ $('erroNome').textContent = 'Escreva seu nome completo.'; ok = false; }
+  if(deps.some(d=>!d.nome.trim())){ avisar('Falta o nome de algum acompanhante.','erro'); ok = false; }
+  return ok;
+}
+
+$('btnConfirmar').addEventListener('click', async ()=>{
+  if(ocupado || !validar()) return;
+  ocupado = true;
+  $('btnConfirmar').disabled = true;
+  const rotuloAntigo = $('btnConfirmar').textContent;
+  $('btnConfirmar').textContent = 'Salvando...';
+  try{
+    const r = await api('confirmar', {
+      telefone: soDigitos($('tel').value),
+      nome: $('nome').value.trim(),
+      combo: $('combo').value,
+      dependentes: deps.filter(d=>d.nome.trim()),
+      recado: $('recado').value.trim()
+    });
+    renderMural(r.mural);
+    carimbar();
+    avisar(r.atualizacao
+      ? 'Confirmação atualizada, ' + primeiroNome($('nome').value) + '.'
+      : 'Presença confirmada, ' + primeiroNome($('nome').value) + '. Dia 22.08, 12h, no Belga Pub.');
+    $('btnCancelar').hidden = false;
+    $('tituloForm').textContent = 'Sua confirmação';
+    $('btnConfirmar').textContent = 'Atualizar confirmação';
+  }catch(err){
+    avisar('Não deu para gravar: ' + err.message, 'erro');
+    $('btnConfirmar').textContent = rotuloAntigo;
+  }finally{
+    ocupado = false;
+    $('btnConfirmar').disabled = false;
+  }
+});
+
+$('btnCancelar').addEventListener('click', async ()=>{
+  if(ocupado) return;
+  if(!confirm('Cancelar sua presença e a dos seus acompanhantes?')) return;
+  ocupado = true;
+  $('btnCancelar').disabled = true;
+  try{
+    const r = await api('cancelar', { telefone: soDigitos($('tel').value) });
+    renderMural(r.mural);
+    $('nome').value = ''; $('recado').value = ''; $('combo').value = 'feijoada';
+    deps = []; renderDeps(); marcarNovo();
+    avisar('Presença cancelada. Se mudar de ideia, é só confirmar de novo.');
+  }catch(err){
+    avisar('Não deu para cancelar: ' + err.message, 'erro');
+  }finally{
+    ocupado = false;
+    $('btnCancelar').disabled = false;
+  }
+});
+
+/* -------------------------------- início -------------------------------- */
+renderDeps();
+carregarMural();
+</script>
+</body>
+</html>
