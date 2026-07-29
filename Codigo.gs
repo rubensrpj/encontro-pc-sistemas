@@ -21,6 +21,9 @@ const ABA_REGISTROS = 'Registros';
 const ABA_PESSOAS = 'Pessoas';
 const ABA_RESUMO = 'Resumo';
 
+/** Capacidade do evento, contando titulares + acompanhantes (inclusive crianças). */
+const LIMITE_PESSOAS = 100;
+
 const COMBOS = {
   feijoada:   { rotulo: 'Feijoada',                    valor: 50  },
   caipirinha: { rotulo: 'Feijoada + caipirinha',       valor: 80  },
@@ -61,8 +64,8 @@ function processar_(e) {
 
   try {
     switch (dados.acao) {
-      case 'listar':    return json_({ ok: true, mural: mural_() });
-      case 'consultar': return json_({ ok: true, registro: buscar_(dados.telefone) });
+      case 'listar':    return json_({ ok: true, mural: mural_(), capacidade: capacidade_() });
+      case 'consultar': return json_({ ok: true, registro: buscar_(dados.telefone), capacidade: capacidade_() });
       case 'confirmar': return json_(confirmar_(dados));
       case 'cancelar':  return json_(cancelar_(dados.telefone));
       default:          return json_({ ok: false, erro: 'Ação desconhecida.' });
@@ -125,6 +128,24 @@ function totalRegistro_(r) {
   }, comboDe_(r.combo).valor);
 }
 
+function pessoasDoRegistro_(r) { return 1 + ((r && r.dependentes) || []).length; }
+
+function pessoasConfirmadas_(registros) {
+  return (registros || []).reduce(function (s, r) { return s + pessoasDoRegistro_(r); }, 0);
+}
+
+/** Situação da lotação. Passe os registros já lidos para evitar reler a planilha. */
+function capacidade_(registros) {
+  const lista = registros || lerRegistros_();
+  const ocupadas = pessoasConfirmadas_(lista);
+  return {
+    limite: LIMITE_PESSOAS,
+    ocupadas: ocupadas,
+    vagas: Math.max(0, LIMITE_PESSOAS - ocupadas),
+    esgotado: ocupadas >= LIMITE_PESSOAS
+  };
+}
+
 /* -------------------------------- ações -------------------------------- */
 
 function buscar_(telefone) {
@@ -173,6 +194,24 @@ function confirmar_(dados) {
     atualizadoEm: new Date()
   };
 
+  /* Lotação: conferida aqui, dentro da trava, para valer mesmo com dois
+     cadastros simultâneos. Quem já confirmou não disputa o próprio lugar. */
+  const registros = lerRegistros_();
+  const anterior = registros.filter(function (r) { return r.telefone === chave; })[0];
+  const ocupadasPelosOutros = pessoasConfirmadas_(registros) - (anterior ? pessoasDoRegistro_(anterior) : 0);
+  const pedidas = pessoasDoRegistro_(registro);
+
+  if (ocupadasPelosOutros + pedidas > LIMITE_PESSOAS) {
+    const restam = Math.max(0, LIMITE_PESSOAS - ocupadasPelosOutros);
+    return {
+      ok: false,
+      esgotado: restam === 0,
+      erro: mensagemLotacao_(restam, pedidas),
+      capacidade: capacidade_(registros),
+      mural: mural_()
+    };
+  }
+
   const aba = aba_(ABA_REGISTROS, CAB_REGISTROS);
   const linha = [
     "'" + registro.telefone,
@@ -195,7 +234,22 @@ function confirmar_(dados) {
   }
 
   reconstruirDerivadas_();
-  return { ok: true, atualizacao: atualizacao, mural: mural_(), total: totalRegistro_(registro) };
+  return {
+    ok: true,
+    atualizacao: atualizacao,
+    mural: mural_(),
+    total: totalRegistro_(registro),
+    capacidade: capacidade_()
+  };
+}
+
+function mensagemLotacao_(restam, pedidas) {
+  if (restam === 0) {
+    return 'Lotação esgotada: os ' + LIMITE_PESSOAS + ' lugares do encontro já foram confirmados.';
+  }
+  /* Vale para quem já confirmou também: aí o "restam" inclui os lugares dele. */
+  return 'Cabem apenas ' + (restam === 1 ? '1 lugar' : restam + ' lugares') +
+         ' para o seu telefone e você pediu ' + pedidas + '. Ajuste os acompanhantes e tente de novo.';
 }
 
 function cancelar_(telefone) {
@@ -204,7 +258,7 @@ function cancelar_(telefone) {
   const idx = indiceDaLinha_(aba, chave);
   if (idx > 0) aba.deleteRow(idx);
   reconstruirDerivadas_();
-  return { ok: true, removido: idx > 0, mural: mural_() };
+  return { ok: true, removido: idx > 0, mural: mural_(), capacidade: capacidade_() };
 }
 
 function indiceDaLinha_(aba, telefone) {
@@ -253,6 +307,8 @@ function reconstruirDerivadas_() {
   const dadosResumo = [
     ['Confirmações (telefones únicos)', registros.length],
     ['Total de pessoas', totalPessoas],
+    ['Limite de lugares', LIMITE_PESSOAS],
+    ['Vagas restantes', Math.max(0, LIMITE_PESSOAS - totalPessoas)],
     ['Feijoada (R$ 50)', contagem.feijoada],
     ['Feijoada + caipirinha (R$ 80)', contagem.caipirinha],
     ['Feijoada + cerveja (R$ 100)', contagem.cerveja],

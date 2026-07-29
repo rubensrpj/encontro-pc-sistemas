@@ -121,7 +121,9 @@ textarea{resize:vertical;min-height:76px}
 .remover{border:none;background:none;color:var(--erro);cursor:pointer;font:600 13px 'Montserrat',sans-serif;text-decoration:underline;padding:2px 4px;width:auto}
 .add{width:100%;padding:13px;border-radius:10px;cursor:pointer;font:600 14.5px 'Montserrat',sans-serif;
   border:2px dashed var(--azul-marca);background:rgba(27,78,155,.07);color:var(--azul-marca)}
-.add:hover{background:rgba(27,78,155,.14)}
+.add:hover:not(:disabled){background:rgba(27,78,155,.14)}
+.add:disabled{opacity:.55;cursor:not-allowed;border-style:solid;border-color:var(--papel-borda);
+  background:transparent;color:var(--tinta-fraca)}
 .valores{margin-top:20px;padding-top:16px;border-top:2px solid var(--papel-borda)}
 .valores .rot{font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca)}
 .valores ul{list-style:none;margin:12px 0 0;padding:0}
@@ -142,9 +144,35 @@ textarea{resize:vertical;min-height:76px}
 .aviso{margin-top:18px;border-radius:12px;padding:13px 15px;font-size:13.5px;font-weight:500;
   border:2px solid rgba(232,123,35,.35);background:rgba(232,123,35,.09)}
 
+/* lotação */
+.painel-lotado{position:relative;margin-top:24px;padding:clamp(24px,3.6vw,30px) clamp(18px,3.2vw,28px) clamp(20px,3vw,26px);
+  border:2px solid rgba(194,52,31,.32);border-radius:14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(232,123,35,.11));
+  box-shadow:0 18px 36px -28px rgba(30,42,58,.85)}
+.painel-lotado::before{content:'';position:absolute;top:-11px;left:50%;width:104px;height:22px;background:var(--fita);
+  transform:translateX(-50%) rotate(-1.6deg);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.painel-lotado .selo{position:absolute;top:-17px;right:clamp(14px,4vw,28px);
+  font-weight:800;font-size:clamp(14px,2.8vw,18px);letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(194,52,31,.9);border:4px solid rgba(194,52,31,.9);border-radius:9px;padding:5px 14px;
+  background:var(--papel);transform:rotate(-9deg)}
+.painel-lotado h3{margin:4px 0 0;padding-right:104px;font-size:clamp(20px,3.8vw,28px);color:var(--azul-marca);letter-spacing:-.02em}
+.painel-lotado p{margin:11px 0 0;max-width:60ch;font-size:14.5px;line-height:1.62;font-weight:500;color:var(--tinta)}
+.painel-lotado p.dica{font-size:13.5px;color:var(--tinta-fraca)}
+.painel-lotado .fechamento{font-family:'Caveat',cursive;font-weight:700;font-size:22px;line-height:1.25;
+  color:var(--azul-escuro);margin-top:15px;transform:rotate(-.5deg)}
+
 .mural-topo{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .contador{font-weight:800;font-size:clamp(50px,12vw,84px);line-height:.9;color:var(--azul-marca);letter-spacing:-.04em}
+.contador .limite{font-size:.4em;color:var(--tinta-fraca)}
 .contador-rot{font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca);margin-top:8px}
+.barra{width:clamp(160px,48vw,290px);height:11px;margin-top:14px;border-radius:99px;
+  background:var(--papel-som);border:1px solid var(--papel-borda);overflow:hidden}
+.barra i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--laranja),#F5A44E);transition:width .6s cubic-bezier(.2,.8,.3,1)}
+.barra.cheia i{background:linear-gradient(90deg,var(--erro),#D9553C)}
+.vagas{margin-top:9px;font-size:13.5px;font-weight:600;color:var(--tinta-fraca)}
+.vagas.alerta{color:var(--laranja)}
+.vagas.esgotado{color:var(--erro)}
 .mural{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:18px;margin-top:26px}
 .mural .postit{min-height:122px;transition:transform .18s}
 .mural .postit:hover{transform:rotate(0) translateY(-4px) scale(1.03);z-index:3}
@@ -165,7 +193,9 @@ textarea{resize:vertical;min-height:76px}
 
 @media (prefers-reduced-motion:reduce){.postit,.toast,.carimbo b{animation:none!important}.carimbo{display:none}.btn:hover,.mural .postit:hover{transform:none!important}}
 @media (max-width:620px){.rabisco{display:none}}
-@media (max-width:560px){.dupla{grid-template-columns:1fr}.faixa{gap:0 12px}}
+@media (max-width:560px){.dupla{grid-template-columns:1fr}.faixa{gap:0 12px}
+  .painel-lotado .selo{position:static;display:inline-block;transform:rotate(-2deg);margin-bottom:10px}
+  .painel-lotado h3{padding-right:0}}
 </style>
 </head>
 <body>
@@ -254,7 +284,16 @@ textarea{resize:vertical;min-height:76px}
 
     <section class="secao">
       <h2 id="tituloForm">Confirme sua presença</h2>
-      <p class="apoio">O telefone identifica você. Confirmando de novo com o mesmo número, sua resposta anterior é substituída — nada duplica.</p>
+      <p class="apoio">O telefone identifica você. Confirmando de novo com o mesmo número, sua resposta anterior é substituída — nada duplica. São 100 lugares no total: o mural, logo abaixo, mostra quantos ainda estão livres.</p>
+
+      <div class="painel-lotado" id="painelEsgotado" hidden>
+        <div class="selo">Lotado</div>
+        <h3>Chegamos aos 100 lugares</h3>
+        <p id="esgotadoNovo">O Belga Pub é nosso das 12h às 16h, e nossa lotação são 100 pessoas — todas já têm nome no mural. Por isso as confirmações estão encerradas por aqui.</p>
+        <p id="esgotadoJa" hidden>Sua presença está garantida — você entrou antes de a casa encher. Dá para ajustar combo e acompanhantes aqui embaixo, respeitando os lugares disponíveis.</p>
+        <p class="dica" id="esgotadoDica">Já confirmou e quer mudar alguma coisa? Digite seu telefone no formulário abaixo que a sua confirmação aparece para editar.</p>
+        <p class="fechamento">Se alguém desistir, a vaga volta na hora — vale dar uma passada aqui de vez em quando.</p>
+      </div>
 
       <div class="form">
         <div class="dupla">
@@ -298,6 +337,8 @@ textarea{resize:vertical;min-height:76px}
           <div class="dica" id="avisoCrianca" hidden>Valor de criança ainda não definido no convite — a organização combina com você.</div>
         </div>
 
+        <div class="aviso" id="avisoUltimos" hidden></div>
+
         <div class="acoes">
           <button class="btn primario" id="btnConfirmar" type="button">Confirmar presença</button>
           <button class="btn perigo" id="btnCancelar" type="button" hidden>Cancelar minha presença</button>
@@ -310,8 +351,10 @@ textarea{resize:vertical;min-height:76px}
     <section class="secao">
       <div class="mural-topo">
         <div>
-          <div class="contador" id="contador">0</div>
+          <div class="contador"><span id="contador">0</span><span class="limite" id="limiteLugares">/100</span></div>
           <div class="contador-rot" id="contadorRot">já confirmaram</div>
+          <div class="barra" id="barra" aria-hidden="true"><i id="barraFill"></i></div>
+          <div class="vagas" id="vagasTexto">Conferindo os lugares...</div>
         </div>
         <button class="btn fantasma" id="btnRecarregar" type="button">Atualizar mural</button>
       </div>
@@ -340,9 +383,17 @@ const COMBOS = {
   crianca:    { rotulo:'Criança — valor a combinar', curto:'Criança',       valor:0   }
 };
 
+/* Lugares do evento. O valor que vale é o do Apps Script (LIMITE_PESSOAS);
+   este aqui é só para a página se virar sozinha antes da primeira resposta. */
+const LIMITE_LUGARES = 100;
+
 /* ------------------------------- estado -------------------------------- */
 let deps = [];
 let ocupado = false;
+let ultimoMural = [];
+let capacidade = { limite:LIMITE_LUGARES, ocupadas:0, vagas:LIMITE_LUGARES, esgotado:false };
+let minhasPessoasSalvas = 0;                     // pessoas já gravadas para o telefone digitado
+let rotuloConfirmar = 'Confirmar presença';
 const $ = (id) => document.getElementById(id);
 
 /* ------------------------------ utilidades ------------------------------ */
@@ -384,8 +435,81 @@ async function api(acao, dados){
     body: JSON.stringify(Object.assign({ acao, token: TOKEN }, dados || {}))
   });
   const json = await resp.json();
-  if(!json.ok) throw new Error(json.erro || 'Falha na comunicação.');
+  if(!json.ok){
+    const erro = new Error(json.erro || 'Falha na comunicação.');
+    erro.resposta = json;                        // recusa por lotação vem com a contagem atual
+    throw erro;
+  }
   return json;
+}
+
+/* ------------------------------- lotação -------------------------------- */
+/* A conferência que vale é a do servidor, dentro da trava. Aqui a página só
+   reflete o resultado e evita que alguém insista num lugar que não existe. */
+function capacidadeDoMural(lista){
+  const ocupadas = (lista || []).reduce((s,r)=>s + (r.pessoas || 0), 0);
+  return { limite:LIMITE_LUGARES, ocupadas, vagas:Math.max(0,LIMITE_LUGARES-ocupadas), esgotado:ocupadas >= LIMITE_LUGARES };
+}
+
+function normalizarCapacidade(c){
+  if(!c || typeof c.ocupadas !== 'number') return null;
+  const limite = typeof c.limite === 'number' && c.limite > 0 ? c.limite : LIMITE_LUGARES;
+  const ocupadas = Math.max(0, c.ocupadas);
+  return { limite, ocupadas, vagas:Math.max(0,limite-ocupadas), esgotado:ocupadas >= limite };
+}
+
+/** Aplica uma resposta da API: mural, contagem e travas do formulário. */
+function aplicar(resposta){
+  const r = resposta || {};
+  if(Array.isArray(r.mural)){ ultimoMural = r.mural; renderMural(r.mural); }
+  capacidade = normalizarCapacidade(r.capacidade) ||
+               (Array.isArray(r.mural) ? capacidadeDoMural(r.mural) : capacidade);
+  renderCapacidade();
+  atualizarTrava();
+}
+
+function renderCapacidade(){
+  const { limite, ocupadas, vagas, esgotado } = capacidade;
+  $('contador').textContent = ocupadas;
+  $('limiteLugares').textContent = '/' + limite;
+  $('barra').classList.toggle('cheia', esgotado);
+  $('barraFill').style.width = Math.min(100, Math.round(ocupadas / limite * 100)) + '%';
+
+  const texto = $('vagasTexto');
+  texto.classList.toggle('esgotado', esgotado);
+  texto.classList.toggle('alerta', !esgotado && vagas <= 10);
+  texto.textContent = esgotado
+    ? 'Lotação esgotada — não há mais lugares.'
+    : (vagas === 1 ? 'Resta 1 lugar.' : 'Restam ' + vagas + ' lugares.');
+
+  const ultimos = $('avisoUltimos');
+  ultimos.hidden = esgotado || vagas > 10;
+  if(!ultimos.hidden){
+    ultimos.textContent = 'Últimos lugares: ' + (vagas === 1 ? 'resta 1 lugar' : 'restam ' + vagas + ' lugares') +
+                          ' de ' + limite + '. Confirme logo para garantir o seu.';
+  }
+}
+
+/** Quantas pessoas este telefone pode ter no total (as dele já contam como dele). */
+function limitePessoal(){ return capacidade.vagas + minhasPessoasSalvas; }
+
+function atualizarTrava(){
+  const jaConfirmado = minhasPessoasSalvas > 0;
+  const bloqueado = capacidade.esgotado && !jaConfirmado;
+
+  $('painelEsgotado').hidden = !capacidade.esgotado;
+  $('esgotadoNovo').hidden = jaConfirmado;
+  $('esgotadoJa').hidden = !jaConfirmado;
+  $('esgotadoDica').hidden = jaConfirmado;
+
+  const semEspacoExtra = (1 + deps.length) >= limitePessoal();
+  $('btnAdd').disabled = bloqueado || semEspacoExtra;
+  $('btnAdd').textContent = (bloqueado || semEspacoExtra)
+    ? 'Sem lugares para mais acompanhantes'
+    : '+ Adicionar companheiro(a) ou filho(a)';
+
+  $('btnConfirmar').disabled = ocupado || bloqueado;
+  $('btnConfirmar').textContent = ocupado ? 'Salvando...' : (bloqueado ? 'Lotação esgotada' : rotuloConfirmar);
 }
 
 /* ----------------------------- acompanhantes ---------------------------- */
@@ -414,6 +538,7 @@ function renderDeps(){
   });
   $('dicaSozinho').hidden = deps.length > 0;
   calcularTotal();
+  atualizarTrava();
 }
 
 $('listaDeps').addEventListener('input', (ev)=>{
@@ -427,6 +552,14 @@ $('listaDeps').addEventListener('click', (ev)=>{
   if(i !== undefined){ deps.splice(+i,1); renderDeps(); }
 });
 $('btnAdd').addEventListener('click', ()=>{
+  if((1 + deps.length) >= limitePessoal()){
+    avisar(capacidade.esgotado && !minhasPessoasSalvas
+      ? 'Lotação esgotada: os ' + capacidade.limite + ' lugares já foram confirmados.'
+      : 'Sua confirmação já ocupa ' + (limitePessoal() === 1
+          ? 'o único lugar disponível'
+          : 'os ' + limitePessoal() + ' lugares disponíveis') + '.', 'erro');
+    return;
+  }
   deps.push({ nome:'', tipo:'companheiro', combo:'feijoada' });
   renderDeps();
 });
@@ -461,7 +594,6 @@ $('nome').addEventListener('input', calcularTotal);
 /* -------------------------------- mural -------------------------------- */
 function renderMural(lista){
   const mural = $('mural'), vazio = $('vazio');
-  $('contador').textContent = lista.reduce((s,r)=>s+r.pessoas, 0);
   $('contadorRot').textContent = 'já confirmaram · ' + lista.length + ' telefone' + (lista.length===1?'':'s');
 
   if(!lista.length){
@@ -490,10 +622,10 @@ function renderMural(lista){
 
 async function carregarMural(){
   try{
-    const r = await api('listar');
-    renderMural(r.mural);
+    aplicar(await api('listar'));
   }catch(err){
     $('vazio').textContent = 'Não foi possível carregar o mural: ' + err.message;
+    $('vagasTexto').textContent = 'Não deu para conferir os lugares agora.';
   }
 }
 $('btnRecarregar').addEventListener('click', async ()=>{
@@ -516,8 +648,10 @@ $('tel').addEventListener('input', (ev)=>{
 function marcarNovo(){
   $('dicaTel').hidden = true;
   $('btnCancelar').hidden = true;
-  $('btnConfirmar').textContent = 'Confirmar presença';
+  minhasPessoasSalvas = 0;
+  rotuloConfirmar = 'Confirmar presença';
   $('tituloForm').textContent = 'Confirme sua presença';
+  atualizarTrava();
 }
 
 async function consultar(telefone){
@@ -530,12 +664,14 @@ async function consultar(telefone){
       $('recado').value = r.registro.recado || '';
       $('dicaTel').hidden = false;
       $('btnCancelar').hidden = false;
-      $('btnConfirmar').textContent = 'Atualizar confirmação';
+      minhasPessoasSalvas = 1 + deps.length;     // o lugar dele já está reservado
+      rotuloConfirmar = 'Atualizar confirmação';
       $('tituloForm').textContent = 'Sua confirmação';
       renderDeps();
     } else {
       marcarNovo();
     }
+    aplicar(r);
   }catch(err){ /* consulta é conveniência: falha não bloqueia o envio */ }
 }
 
@@ -549,37 +685,44 @@ function validar(){
   $('erroNome').hidden = nome.length >= 3;
   if(nome.length < 3){ $('erroNome').textContent = 'Escreva seu nome completo.'; ok = false; }
   if(deps.some(d=>!d.nome.trim())){ avisar('Falta o nome de algum acompanhante.','erro'); ok = false; }
+
+  const pedidas = 1 + deps.filter(d=>d.nome.trim()).length;
+  if(capacidade.esgotado && !minhasPessoasSalvas){
+    avisar('Lotação esgotada: os ' + capacidade.limite + ' lugares já foram confirmados.','erro'); ok = false;
+  } else if(pedidas > limitePessoal()){
+    avisar('Só há ' + limitePessoal() + ' lugar(es) para o seu telefone e você pediu ' + pedidas + '.','erro'); ok = false;
+  }
   return ok;
 }
 
 $('btnConfirmar').addEventListener('click', async ()=>{
   if(ocupado || !validar()) return;
   ocupado = true;
-  $('btnConfirmar').disabled = true;
-  const rotuloAntigo = $('btnConfirmar').textContent;
-  $('btnConfirmar').textContent = 'Salvando...';
+  atualizarTrava();
   try{
+    const confirmadas = deps.filter(d=>d.nome.trim());
     const r = await api('confirmar', {
       telefone: soDigitos($('tel').value),
       nome: $('nome').value.trim(),
       combo: $('combo').value,
-      dependentes: deps.filter(d=>d.nome.trim()),
+      dependentes: confirmadas,
       recado: $('recado').value.trim()
     });
-    renderMural(r.mural);
+    minhasPessoasSalvas = 1 + confirmadas.length;
+    rotuloConfirmar = 'Atualizar confirmação';
     carimbar();
     avisar(r.atualizacao
       ? 'Confirmação atualizada, ' + primeiroNome($('nome').value) + '.'
       : 'Presença confirmada, ' + primeiroNome($('nome').value) + '. Dia 26.09, 12h, no Belga Pub.');
     $('btnCancelar').hidden = false;
     $('tituloForm').textContent = 'Sua confirmação';
-    $('btnConfirmar').textContent = 'Atualizar confirmação';
+    aplicar(r);
   }catch(err){
     avisar('Não deu para gravar: ' + err.message, 'erro');
-    $('btnConfirmar').textContent = rotuloAntigo;
+    aplicar(err.resposta);                       // se a casa encheu no meio do caminho, a página já mostra
   }finally{
     ocupado = false;
-    $('btnConfirmar').disabled = false;
+    atualizarTrava();
   }
 });
 
@@ -590,10 +733,10 @@ $('btnCancelar').addEventListener('click', async ()=>{
   $('btnCancelar').disabled = true;
   try{
     const r = await api('cancelar', { telefone: soDigitos($('tel').value) });
-    renderMural(r.mural);
     $('nome').value = ''; $('recado').value = ''; $('combo').value = 'feijoada';
-    deps = []; renderDeps(); marcarNovo();
-    avisar('Presença cancelada. Se mudar de ideia, é só confirmar de novo.');
+    deps = []; marcarNovo(); renderDeps();
+    aplicar(r);
+    avisar('Presença cancelada. Se mudar de ideia, é só confirmar de novo — enquanto houver lugar.');
   }catch(err){
     avisar('Não deu para cancelar: ' + err.message, 'erro');
   }finally{
@@ -604,7 +747,7 @@ $('btnCancelar').addEventListener('click', async ()=>{
 
 /* -------------------------------- início -------------------------------- */
 renderDeps();
-carregarMural();
+carregarMural();                                 /* o contador só aparece depois de conferir com o servidor */
 </script>
 </body>
 </html>
