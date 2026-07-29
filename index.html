@@ -110,6 +110,7 @@ input,select,textarea{width:100%;background:#FFFCF6;border:2px solid var(--papel
   padding:12px 13px;font-size:16px;font-family:inherit;font-weight:500;color:var(--tinta);outline:none;transition:border-color .16s,box-shadow .16s}
 input::placeholder,textarea::placeholder{color:#A9A08F;font-weight:400}
 input:focus,select:focus,textarea:focus{border-color:var(--azul-marca);box-shadow:0 0 0 3px rgba(27,78,155,.18)}
+input:disabled,select:disabled,textarea:disabled{opacity:.65;background:#F1EBDF;cursor:not-allowed}
 #tel{letter-spacing:.06em;font-variant-numeric:tabular-nums}
 textarea{resize:vertical;min-height:76px}
 .erro{color:var(--erro);font-size:13px;margin-top:6px;font-weight:600}
@@ -119,6 +120,7 @@ textarea{resize:vertical;min-height:76px}
 .pessoa-topo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .pessoa-topo span{font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--laranja)}
 .remover{border:none;background:none;color:var(--erro);cursor:pointer;font:600 13px 'Montserrat',sans-serif;text-decoration:underline;padding:2px 4px;width:auto}
+.remover:disabled{opacity:.35;cursor:not-allowed;text-decoration:none}
 .add{width:100%;padding:13px;border-radius:10px;cursor:pointer;font:600 14.5px 'Montserrat',sans-serif;
   border:2px dashed var(--azul-marca);background:rgba(27,78,155,.07);color:var(--azul-marca)}
 .add:hover:not(:disabled){background:rgba(27,78,155,.14)}
@@ -139,7 +141,6 @@ textarea{resize:vertical;min-height:76px}
 .primario:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
 .fantasma{background:transparent;color:var(--azul-marca);border:2px solid var(--papel-borda)}
 .fantasma:hover:not(:disabled){background:rgba(27,78,155,.07)}
-.perigo{background:transparent;color:var(--erro);border:2px solid rgba(194,52,31,.35)}
 .acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center}
 .aviso{margin-top:18px;border-radius:12px;padding:13px 15px;font-size:13.5px;font-weight:500;
   border:2px solid rgba(232,123,35,.35);background:rgba(232,123,35,.09)}
@@ -284,14 +285,14 @@ textarea{resize:vertical;min-height:76px}
 
     <section class="secao">
       <h2 id="tituloForm">Confirme sua presença</h2>
-      <p class="apoio">O telefone identifica você. Confirmando de novo com o mesmo número, sua resposta anterior é substituída — nada duplica. São 100 lugares no total: o mural, logo abaixo, mostra quantos ainda estão livres.</p>
+      <p class="apoio">O telefone identifica você — cada número confirma uma única vez. São 100 lugares no total: o mural, logo abaixo, mostra quantos ainda estão livres. Para alterar ou cancelar uma confirmação, é só solicitar à organização.</p>
 
       <div class="painel-lotado" id="painelEsgotado" hidden>
         <div class="selo">Lotado</div>
         <h3>Chegamos aos 100 lugares</h3>
         <p id="esgotadoNovo">O Belga Pub é nosso das 12h às 16h, e nossa lotação são 100 pessoas — todas já têm nome no mural. Por isso as confirmações estão encerradas por aqui.</p>
-        <p id="esgotadoJa" hidden>Sua presença está garantida — você entrou antes de a casa encher. Dá para ajustar combo e acompanhantes aqui embaixo, respeitando os lugares disponíveis.</p>
-        <p class="dica" id="esgotadoDica">Já confirmou e quer mudar alguma coisa? Digite seu telefone no formulário abaixo que a sua confirmação aparece para editar.</p>
+        <p id="esgotadoJa" hidden>Sua presença está garantida — você entrou antes de a casa encher. Agora é só chegar no dia 26.09, às 12h.</p>
+        <p class="dica" id="esgotadoDica">Precisa alterar ou cancelar uma confirmação? É só solicitar à organização.</p>
         <p class="fechamento">Se alguém desistir, a vaga volta na hora — vale dar uma passada aqui de vez em quando.</p>
       </div>
 
@@ -301,7 +302,7 @@ textarea{resize:vertical;min-height:76px}
             <label class="rotulo" for="tel">Telefone com DDD</label>
             <input id="tel" inputmode="numeric" placeholder="(62) 9 9999-9999" autocomplete="tel">
             <div class="erro" id="erroTel" hidden></div>
-            <div class="dica" id="dicaTel" hidden>Este número já confirmou. Ajuste e salve.</div>
+            <div class="dica" id="dicaTel" hidden>Este número já confirmou presença. Para alterar ou cancelar, solicite à organização.</div>
           </div>
           <div class="campo">
             <label class="rotulo" for="nome">Seu nome completo</label>
@@ -341,10 +342,9 @@ textarea{resize:vertical;min-height:76px}
 
         <div class="acoes">
           <button class="btn primario" id="btnConfirmar" type="button">Confirmar presença</button>
-          <button class="btn perigo" id="btnCancelar" type="button" hidden>Cancelar minha presença</button>
         </div>
 
-        <div class="aviso">Os nomes confirmados ficam visíveis no mural desta página. Telefone e recado só a organização vê na planilha.</div>
+        <div class="aviso">Os nomes confirmados ficam visíveis no mural desta página. Telefone e recado só a organização vê na planilha. Para alterar ou cancelar depois de confirmar, é só solicitar à organização.</div>
       </div>
     </section>
 
@@ -392,8 +392,7 @@ let deps = [];
 let ocupado = false;
 let ultimoMural = [];
 let capacidade = { limite:LIMITE_LUGARES, ocupadas:0, vagas:LIMITE_LUGARES, esgotado:false };
-let minhasPessoasSalvas = 0;                     // pessoas já gravadas para o telefone digitado
-let rotuloConfirmar = 'Confirmar presença';
+let jaConfirmado = false;                        // o telefone digitado já tem presença gravada
 const $ = (id) => document.getElementById(id);
 
 /* ------------------------------ utilidades ------------------------------ */
@@ -490,26 +489,33 @@ function renderCapacidade(){
   }
 }
 
-/** Quantas pessoas este telefone pode ter no total (as dele já contam como dele). */
-function limitePessoal(){ return capacidade.vagas + minhasPessoasSalvas; }
-
 function atualizarTrava(){
-  const jaConfirmado = minhasPessoasSalvas > 0;
-  const bloqueado = capacidade.esgotado && !jaConfirmado;
+  /* Confirmou uma vez, acabou: alterar ou cancelar é só por solicitação
+     à organização — a página não edita nem exclui nada. */
+  const bloqueado = capacidade.esgotado || jaConfirmado;
 
   $('painelEsgotado').hidden = !capacidade.esgotado;
   $('esgotadoNovo').hidden = jaConfirmado;
   $('esgotadoJa').hidden = !jaConfirmado;
   $('esgotadoDica').hidden = jaConfirmado;
 
-  const semEspacoExtra = (1 + deps.length) >= limitePessoal();
+  ['nome','combo','recado'].forEach(id => { $(id).disabled = jaConfirmado; });
+  document.querySelectorAll('#listaDeps input, #listaDeps select, #listaDeps .remover')
+    .forEach(el => { el.disabled = jaConfirmado; });
+
+  const semEspacoExtra = (1 + deps.length) >= capacidade.vagas;
   $('btnAdd').disabled = bloqueado || semEspacoExtra;
-  $('btnAdd').textContent = (bloqueado || semEspacoExtra)
-    ? 'Sem lugares para mais acompanhantes'
-    : '+ Adicionar companheiro(a) ou filho(a)';
+  $('btnAdd').textContent = jaConfirmado
+    ? 'Confirmação fechada — mudanças só com a organização'
+    : (bloqueado || semEspacoExtra)
+      ? 'Sem lugares para mais acompanhantes'
+      : '+ Adicionar companheiro(a) ou filho(a)';
 
   $('btnConfirmar').disabled = ocupado || bloqueado;
-  $('btnConfirmar').textContent = ocupado ? 'Salvando...' : (bloqueado ? 'Lotação esgotada' : rotuloConfirmar);
+  $('btnConfirmar').textContent = ocupado ? 'Salvando...'
+    : jaConfirmado ? 'Presença confirmada'
+    : capacidade.esgotado ? 'Lotação esgotada'
+    : 'Confirmar presença';
 }
 
 /* ----------------------------- acompanhantes ---------------------------- */
@@ -552,12 +558,13 @@ $('listaDeps').addEventListener('click', (ev)=>{
   if(i !== undefined){ deps.splice(+i,1); renderDeps(); }
 });
 $('btnAdd').addEventListener('click', ()=>{
-  if((1 + deps.length) >= limitePessoal()){
-    avisar(capacidade.esgotado && !minhasPessoasSalvas
+  if(jaConfirmado) return;
+  if((1 + deps.length) >= capacidade.vagas){
+    avisar(capacidade.esgotado
       ? 'Lotação esgotada: os ' + capacidade.limite + ' lugares já foram confirmados.'
-      : 'Sua confirmação já ocupa ' + (limitePessoal() === 1
+      : 'Sua confirmação já ocupa ' + (capacidade.vagas === 1
           ? 'o único lugar disponível'
-          : 'os ' + limitePessoal() + ' lugares disponíveis') + '.', 'erro');
+          : 'os ' + capacidade.vagas + ' lugares disponíveis') + '.', 'erro');
     return;
   }
   deps.push({ nome:'', tipo:'companheiro', combo:'feijoada' });
@@ -647,9 +654,7 @@ $('tel').addEventListener('input', (ev)=>{
 
 function marcarNovo(){
   $('dicaTel').hidden = true;
-  $('btnCancelar').hidden = true;
-  minhasPessoasSalvas = 0;
-  rotuloConfirmar = 'Confirmar presença';
+  jaConfirmado = false;
   $('tituloForm').textContent = 'Confirme sua presença';
   atualizarTrava();
 }
@@ -658,15 +663,14 @@ async function consultar(telefone){
   try{
     const r = await api('consultar', { telefone });
     if(r.registro){
+      /* Mostra o que está gravado, mas travado: mudança só via organização. */
       $('nome').value = r.registro.nome || '';
       $('combo').value = COMBOS[r.registro.combo] ? r.registro.combo : 'feijoada';
       deps = (r.registro.dependentes || []).map(d=>({ nome:d.nome, tipo:d.tipo, combo:d.combo }));
       $('recado').value = r.registro.recado || '';
       $('dicaTel').hidden = false;
-      $('btnCancelar').hidden = false;
-      minhasPessoasSalvas = 1 + deps.length;     // o lugar dele já está reservado
-      rotuloConfirmar = 'Atualizar confirmação';
-      $('tituloForm').textContent = 'Sua confirmação';
+      jaConfirmado = true;
+      $('tituloForm').textContent = 'Sua presença já está confirmada';
       renderDeps();
     } else {
       marcarNovo();
@@ -687,10 +691,12 @@ function validar(){
   if(deps.some(d=>!d.nome.trim())){ avisar('Falta o nome de algum acompanhante.','erro'); ok = false; }
 
   const pedidas = 1 + deps.filter(d=>d.nome.trim()).length;
-  if(capacidade.esgotado && !minhasPessoasSalvas){
+  if(jaConfirmado){
+    avisar('Este telefone já confirmou presença. Para alterar ou cancelar, solicite à organização.','erro'); ok = false;
+  } else if(capacidade.esgotado){
     avisar('Lotação esgotada: os ' + capacidade.limite + ' lugares já foram confirmados.','erro'); ok = false;
-  } else if(pedidas > limitePessoal()){
-    avisar('Só há ' + limitePessoal() + ' lugar(es) para o seu telefone e você pediu ' + pedidas + '.','erro'); ok = false;
+  } else if(pedidas > capacidade.vagas){
+    avisar('Restam ' + capacidade.vagas + ' lugar(es) e você pediu ' + pedidas + '.','erro'); ok = false;
   }
   return ok;
 }
@@ -708,40 +714,19 @@ $('btnConfirmar').addEventListener('click', async ()=>{
       dependentes: confirmadas,
       recado: $('recado').value.trim()
     });
-    minhasPessoasSalvas = 1 + confirmadas.length;
-    rotuloConfirmar = 'Atualizar confirmação';
+    jaConfirmado = true;
     carimbar();
-    avisar(r.atualizacao
-      ? 'Confirmação atualizada, ' + primeiroNome($('nome').value) + '.'
-      : 'Presença confirmada, ' + primeiroNome($('nome').value) + '. Dia 26.09, 12h, no Belga Pub.');
-    $('btnCancelar').hidden = false;
-    $('tituloForm').textContent = 'Sua confirmação';
+    avisar('Presença confirmada, ' + primeiroNome($('nome').value) + '. Dia 26.09, 12h, no Belga Pub.');
+    $('dicaTel').hidden = false;
+    $('tituloForm').textContent = 'Sua presença já está confirmada';
     aplicar(r);
   }catch(err){
+    if(err.resposta && err.resposta.jaConfirmado) jaConfirmado = true;
     avisar('Não deu para gravar: ' + err.message, 'erro');
     aplicar(err.resposta);                       // se a casa encheu no meio do caminho, a página já mostra
   }finally{
     ocupado = false;
     atualizarTrava();
-  }
-});
-
-$('btnCancelar').addEventListener('click', async ()=>{
-  if(ocupado) return;
-  if(!confirm('Cancelar sua presença e a dos seus acompanhantes?')) return;
-  ocupado = true;
-  $('btnCancelar').disabled = true;
-  try{
-    const r = await api('cancelar', { telefone: soDigitos($('tel').value) });
-    $('nome').value = ''; $('recado').value = ''; $('combo').value = 'feijoada';
-    deps = []; marcarNovo(); renderDeps();
-    aplicar(r);
-    avisar('Presença cancelada. Se mudar de ideia, é só confirmar de novo — enquanto houver lugar.');
-  }catch(err){
-    avisar('Não deu para cancelar: ' + err.message, 'erro');
-  }finally{
-    ocupado = false;
-    $('btnCancelar').disabled = false;
   }
 });
 
