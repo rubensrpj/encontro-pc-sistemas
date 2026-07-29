@@ -67,7 +67,6 @@ function processar_(e) {
       case 'listar':    return json_({ ok: true, mural: mural_(), capacidade: capacidade_() });
       case 'consultar': return json_({ ok: true, registro: buscar_(dados.telefone), capacidade: capacidade_() });
       case 'confirmar': return json_(confirmar_(dados));
-      case 'cancelar':  return json_(cancelar_(dados.telefone));
       default:          return json_({ ok: false, erro: 'Ação desconhecida.' });
     }
   } catch (err) {
@@ -194,15 +193,26 @@ function confirmar_(dados) {
     atualizadoEm: new Date()
   };
 
-  /* Lotação: conferida aqui, dentro da trava, para valer mesmo com dois
-     cadastros simultâneos. Quem já confirmou não disputa o próprio lugar. */
+  /* Cada telefone confirma uma única vez: alterar ou cancelar é só por
+     solicitação à organização, direto na planilha. */
   const registros = lerRegistros_();
-  const anterior = registros.filter(function (r) { return r.telefone === chave; })[0];
-  const ocupadasPelosOutros = pessoasConfirmadas_(registros) - (anterior ? pessoasDoRegistro_(anterior) : 0);
+  if (registros.some(function (r) { return r.telefone === chave; })) {
+    return {
+      ok: false,
+      jaConfirmado: true,
+      erro: 'Este telefone já tem presença confirmada. Para alterar ou cancelar, fale com a organização.',
+      capacidade: capacidade_(registros),
+      mural: mural_()
+    };
+  }
+
+  /* Lotação: conferida aqui, dentro da trava, para valer mesmo com dois
+     cadastros simultâneos. */
+  const ocupadas = pessoasConfirmadas_(registros);
   const pedidas = pessoasDoRegistro_(registro);
 
-  if (ocupadasPelosOutros + pedidas > LIMITE_PESSOAS) {
-    const restam = Math.max(0, LIMITE_PESSOAS - ocupadasPelosOutros);
+  if (ocupadas + pedidas > LIMITE_PESSOAS) {
+    const restam = Math.max(0, LIMITE_PESSOAS - ocupadas);
     return {
       ok: false,
       esgotado: restam === 0,
@@ -225,18 +235,11 @@ function confirmar_(dados) {
     registro.atualizadoEm
   ];
 
-  const idx = indiceDaLinha_(aba, registro.telefone);
-  const atualizacao = idx > 0;
-  if (atualizacao) {
-    aba.getRange(idx, 1, 1, linha.length).setValues([linha]);
-  } else {
-    aba.appendRow(linha);
-  }
+  aba.appendRow(linha);
 
   reconstruirDerivadas_();
   return {
     ok: true,
-    atualizacao: atualizacao,
     mural: mural_(),
     total: totalRegistro_(registro),
     capacidade: capacidade_()
@@ -247,28 +250,8 @@ function mensagemLotacao_(restam, pedidas) {
   if (restam === 0) {
     return 'Lotação esgotada: os ' + LIMITE_PESSOAS + ' lugares do encontro já foram confirmados.';
   }
-  /* Vale para quem já confirmou também: aí o "restam" inclui os lugares dele. */
-  return 'Cabem apenas ' + (restam === 1 ? '1 lugar' : restam + ' lugares') +
-         ' para o seu telefone e você pediu ' + pedidas + '. Ajuste os acompanhantes e tente de novo.';
-}
-
-function cancelar_(telefone) {
-  const chave = soDigitos_(telefone);
-  const aba = aba_(ABA_REGISTROS, CAB_REGISTROS);
-  const idx = indiceDaLinha_(aba, chave);
-  if (idx > 0) aba.deleteRow(idx);
-  reconstruirDerivadas_();
-  return { ok: true, removido: idx > 0, mural: mural_(), capacidade: capacidade_() };
-}
-
-function indiceDaLinha_(aba, telefone) {
-  const ultima = aba.getLastRow();
-  if (ultima < 2) return -1;
-  const col = aba.getRange(2, 1, ultima - 1, 1).getValues();
-  for (let i = 0; i < col.length; i++) {
-    if (soDigitos_(col[i][0]) === telefone) return i + 2;
-  }
-  return -1;
+  return 'Restam apenas ' + (restam === 1 ? '1 lugar' : restam + ' lugares') +
+         ' e você pediu ' + pedidas + '. Ajuste os acompanhantes e tente de novo.';
 }
 
 /* --------------------------- abas derivadas --------------------------- */
