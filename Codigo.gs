@@ -5,6 +5,7 @@
  * Abas geradas automaticamente:
  *   Registros — uma linha por telefone (fonte da verdade, chave única)
  *   Pessoas   — uma linha por pessoa (titular + acompanhantes), para exportar
+ *   Espera    — fila de quem chegou depois de lotar, na ordem de chegada
  *   Resumo    — contagens por combo e arrecadação prevista
  *
  * Implantar: Implantar > Nova implantação > App da Web
@@ -19,6 +20,7 @@ const TOKEN = '24683de1a919f21105a56c471044bbf5';   // troque. Vai aparecer no c
 
 const ABA_REGISTROS = 'Registros';
 const ABA_PESSOAS = 'Pessoas';
+const ABA_ESPERA = 'Espera';
 const ABA_RESUMO = 'Resumo';
 
 /** Capacidade do evento, contando titulares + acompanhantes (inclusive crianças). */
@@ -38,6 +40,9 @@ const CAB_REGISTROS = [
 const CAB_PESSOAS = [
   'Telefone', 'Titular', 'Pessoa', 'Vínculo', 'Combo', 'Valor (R$)', 'Recado', 'Atualizado em'
 ];
+/* A ordem da fila é a ordem das linhas desta aba — mover uma linha muda a
+   posição de quem espera, e a coluna Posição é renumerada sozinha. */
+const CAB_ESPERA = ['Posição', 'Telefone', 'Nome', 'Entrou em'];
 
 /* ------------------------------- entrada ------------------------------- */
 
@@ -64,9 +69,15 @@ function processar_(e) {
 
   try {
     switch (dados.acao) {
-      case 'listar':    return json_({ ok: true, mural: mural_(), capacidade: capacidade_() });
-      case 'consultar': return json_({ ok: true, registro: buscar_(dados.telefone), capacidade: capacidade_() });
+      case 'listar':    return json_({ ok: true, mural: mural_(), espera: espera_(), capacidade: capacidade_() });
+      case 'consultar': return json_({
+                          ok: true,
+                          registro: buscar_(dados.telefone),
+                          naEspera: posicaoNaEspera_(dados.telefone),
+                          capacidade: capacidade_()
+                        });
       case 'confirmar': return json_(confirmar_(dados));
+      case 'esperar':   return json_(entrarNaEspera_(dados));
       default:          return json_({ ok: false, erro: 'Ação desconhecida.' });
     }
   } catch (err) {
@@ -145,6 +156,108 @@ function capacidade_(registros) {
   };
 }
 
+/* ---------------------------- lista de espera ---------------------------- */
+
+/** Fila na ordem das linhas da aba — que é a ordem de chegada. */
+function lerEspera_() {
+  const aba = aba_(ABA_ESPERA, CAB_ESPERA);
+  const ultima = aba.getLastRow();
+  if (ultima < 2) return [];
+  return aba.getRange(2, 1, ultima - 1, CAB_ESPERA.length).getValues()
+    .filter(function (l) { return soDigitos_(l[1]); })
+    .map(function (l) {
+      return {
+        telefone: soDigitos_(l[1]),
+        nome: String(l[2] || ''),
+        entrouEm: l[3] instanceof Date ? l[3] : new Date()
+      };
+    });
+}
+
+/** Fila pública: nome e posição, sem telefone. */
+function espera_(fila) {
+  return (fila || lerEspera_()).map(function (e, i) {
+    return {
+      nome: e.nome,
+      posicao: i + 1,
+      par: parseInt(e.telefone.slice(-1), 10) % 2
+    };
+  });
+}
+
+function posicaoNaEspera_(telefone) {
+  const chave = soDigitos_(telefone);
+  if (!chave) return null;
+  const fila = lerEspera_();
+  for (let i = 0; i < fila.length; i++) {
+    if (fila[i].telefone === chave) {
+      return { posicao: i + 1, nome: fila[i].nome, total: fila.length };
+    }
+  }
+  return null;
+}
+
+function removerDaEspera_(telefone) {
+  const chave = soDigitos_(telefone);
+  const aba = aba_(ABA_ESPERA, CAB_ESPERA);
+  const ultima = aba.getLastRow();
+  if (ultima < 2) return false;
+  const col = aba.getRange(2, 2, ultima - 1, 1).getValues();
+  let removeu = false;
+  for (let i = col.length - 1; i >= 0; i--) {     // de baixo para cima: apagar não desloca o que falta ver
+    if (soDigitos_(col[i][0]) === chave) { aba.deleteRow(i + 2); removeu = true; }
+  }
+  return removeu;
+}
+
+/** Só entra na fila quem chegou depois de lotar. */
+function entrarNaEspera_(dados) {
+  const chave = soDigitos_(dados.telefone);
+  if (chave.length !== 10 && chave.length !== 11) return { ok: false, erro: 'Telefone inválido.' };
+  const nome = String(dados.nome || '').trim();
+  if (nome.length < 3) return { ok: false, erro: 'Nome muito curto.' };
+
+  const registros = lerRegistros_();
+  const cap = capacidade_(registros);
+
+  if (registros.some(function (r) { return r.telefone === chave; })) {
+    return {
+      ok: false, jaConfirmado: true,
+      erro: 'Este telefone já tem presença confirmada — não precisa esperar.',
+      capacidade: cap, mural: mural_(), espera: espera_()
+    };
+  }
+
+  if (!cap.esgotado) {
+    return {
+      ok: false,
+      erro: 'Ainda há lugares livres. Confirme sua presença normalmente.',
+      capacidade: cap, mural: mural_(), espera: espera_()
+    };
+  }
+
+  const jaNaFila = posicaoNaEspera_(chave);
+  if (jaNaFila) {
+    return {
+      ok: false, naEspera: jaNaFila,
+      erro: 'Este telefone já está na lista de espera, na ' + jaNaFila.posicao + 'ª posição.',
+      capacidade: cap, mural: mural_(), espera: espera_()
+    };
+  }
+
+  const aba = aba_(ABA_ESPERA, CAB_ESPERA);
+  aba.appendRow([lerEspera_().length + 1, "'" + chave, nome, new Date()]);
+
+  reconstruirDerivadas_();
+  return {
+    ok: true,
+    naEspera: posicaoNaEspera_(chave),
+    capacidade: cap,
+    mural: mural_(),
+    espera: espera_()
+  };
+}
+
 /* -------------------------------- ações -------------------------------- */
 
 function buscar_(telefone) {
@@ -202,7 +315,8 @@ function confirmar_(dados) {
       jaConfirmado: true,
       erro: 'Este telefone já tem presença confirmada. Para alterar ou cancelar, fale com a organização.',
       capacidade: capacidade_(registros),
-      mural: mural_()
+      mural: mural_(),
+      espera: espera_()
     };
   }
 
@@ -218,7 +332,8 @@ function confirmar_(dados) {
       esgotado: restam === 0,
       erro: mensagemLotacao_(restam, pedidas),
       capacidade: capacidade_(registros),
-      mural: mural_()
+      mural: mural_(),
+      espera: espera_()
     };
   }
 
@@ -237,10 +352,14 @@ function confirmar_(dados) {
 
   aba.appendRow(linha);
 
+  /* Quem conseguiu lugar sai da fila: ninguém fica nos dois lugares. */
+  removerDaEspera_(chave);
+
   reconstruirDerivadas_();
   return {
     ok: true,
     mural: mural_(),
+    espera: espera_(),
     total: totalRegistro_(registro),
     capacidade: capacidade_()
   };
@@ -275,6 +394,10 @@ function reconstruirDerivadas_() {
   });
   if (linhas.length) pessoas.getRange(2, 1, linhas.length, CAB_PESSOAS.length).setValues(linhas);
 
+  // Espera — a coluna Posição sempre reflete a ordem atual das linhas
+  renumerarEspera_();
+  const fila = lerEspera_();
+
   // Resumo
   const contagem = { feijoada: 0, caipirinha: 0, cerveja: 0, crianca: 0 };
   let totalPessoas = 0, totalValor = 0;
@@ -292,6 +415,7 @@ function reconstruirDerivadas_() {
     ['Total de pessoas', totalPessoas],
     ['Limite de lugares', LIMITE_PESSOAS],
     ['Vagas restantes', Math.max(0, LIMITE_PESSOAS - totalPessoas)],
+    ['Na lista de espera', fila.length],
     ['Feijoada (R$ 50)', contagem.feijoada],
     ['Feijoada + caipirinha (R$ 80)', contagem.caipirinha],
     ['Feijoada + cerveja (R$ 100)', contagem.cerveja],
@@ -302,11 +426,24 @@ function reconstruirDerivadas_() {
   resumo.getRange(2, 1, dadosResumo.length, 2).setValues(dadosResumo);
 }
 
+function renumerarEspera_() {
+  const aba = aba_(ABA_ESPERA, CAB_ESPERA);
+  const ultima = aba.getLastRow();
+  if (ultima < 2) return;
+  const telefones = aba.getRange(2, 2, ultima - 1, 1).getValues();
+  let n = 0;
+  const posicoes = telefones.map(function (l) {
+    return [soDigitos_(l[0]) ? ++n : ''];
+  });
+  aba.getRange(2, 1, posicoes.length, 1).setValues(posicoes);
+}
+
 /* ------------- utilitário manual: rodar uma vez para criar abas ------------- */
 
 function prepararPlanilha() {
   aba_(ABA_REGISTROS, CAB_REGISTROS);
   aba_(ABA_PESSOAS, CAB_PESSOAS);
+  aba_(ABA_ESPERA, CAB_ESPERA);
   aba_(ABA_RESUMO, ['Indicador', 'Valor']);
   reconstruirDerivadas_();
 }
