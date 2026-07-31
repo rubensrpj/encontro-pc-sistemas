@@ -162,6 +162,35 @@ textarea{resize:vertical;min-height:76px}
 .painel-lotado .fechamento{font-family:'Caveat',cursive;font-weight:700;font-size:22px;line-height:1.25;
   color:var(--azul-escuro);margin-top:15px;transform:rotate(-.5deg)}
 
+/* lista de espera */
+.espera-topo{display:flex;align-items:center;gap:clamp(14px,3vw,22px);flex-wrap:wrap}
+.ampulheta{width:clamp(46px,9vw,60px);height:auto;flex:none}
+.ampulheta .vidro{fill:none;stroke:var(--azul-marca);stroke-width:3;stroke-linecap:round}
+.ampulheta .areia{fill:var(--laranja)}
+.ampulheta .grao{stroke:var(--laranja);stroke-width:3;stroke-linecap:round;animation:cair 1.6s linear infinite}
+@keyframes cair{0%{opacity:0;transform:translateY(-3px)}18%,78%{opacity:1}100%{opacity:0;transform:translateY(8px)}}
+.fila{position:relative;margin-top:24px;display:grid;gap:12px;max-width:540px}
+/* fio da fila: some atrás das senhas e aparece só nos vãos, como um varal */
+.fila::before{content:'';position:absolute;left:35px;top:20px;bottom:20px;width:2px;
+  background:repeating-linear-gradient(180deg,var(--papel-borda) 0 5px,transparent 5px 11px)}
+.senha{position:relative;display:flex;align-items:center;gap:15px;padding:13px 18px 13px 15px;
+  background:#FFFCF6;border:2px solid var(--papel-borda);border-radius:12px;
+  box-shadow:0 14px 26px -22px rgba(30,42,58,.9);
+  animation:colar .5s cubic-bezier(.2,.9,.3,1.5) both}
+.senha .num{position:relative;z-index:1;flex:none;display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:50%;background:var(--azul-marca);color:var(--papel);
+  font-weight:800;font-size:15px;letter-spacing:-.02em}
+.senha .picote{flex:none;align-self:stretch;width:2px;
+  background:repeating-linear-gradient(180deg,#CFC2A8 0 4px,transparent 4px 9px)}
+.senha .quem{flex:1;min-width:0;font-weight:600;font-size:15.5px;line-height:1.25;overflow-wrap:anywhere}
+.senha .etiqueta{flex:none;font-weight:700;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--laranja)}
+.senha .etiqueta.eu{color:var(--azul-marca)}
+.senha.proximo{border-color:rgba(232,123,35,.5);
+  background:linear-gradient(90deg,rgba(232,123,35,.12),#FFFCF6 62%)}
+.senha.proximo .num{background:var(--laranja)}
+.senha.voce{border-color:rgba(27,78,155,.55);box-shadow:0 0 0 3px rgba(27,78,155,.12),0 14px 26px -22px rgba(30,42,58,.9)}
+.legenda-fila{margin-top:16px;font-size:13px;color:var(--tinta-fraca);font-weight:500;max-width:62ch;line-height:1.6}
+
 .mural-topo{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .contador{font-weight:800;font-size:clamp(50px,12vw,84px);line-height:.9;color:var(--azul-marca);letter-spacing:-.04em}
 .contador .limite{font-size:.4em;color:var(--tinta-fraca)}
@@ -192,7 +221,9 @@ textarea{resize:vertical;min-height:76px}
 .toast.erro{background:var(--erro)}
 @keyframes subir{from{opacity:0;transform:translate(-50%,16px)}}
 
-@media (prefers-reduced-motion:reduce){.postit,.toast,.carimbo b{animation:none!important}.carimbo{display:none}.btn:hover,.mural .postit:hover{transform:none!important}}
+.carimbo.fila b{color:rgba(27,78,155,.9);border-color:rgba(27,78,155,.9)}
+
+@media (prefers-reduced-motion:reduce){.postit,.senha,.toast,.carimbo b,.ampulheta .grao{animation:none!important}.carimbo{display:none}.btn:hover,.mural .postit:hover{transform:none!important}}
 @media (max-width:620px){.rabisco{display:none}}
 @media (max-width:560px){.dupla{grid-template-columns:1fr}.faixa{gap:0 12px}
   .painel-lotado .selo{position:static;display:inline-block;transform:rotate(-2deg);margin-bottom:10px}
@@ -285,15 +316,18 @@ textarea{resize:vertical;min-height:76px}
 
     <section class="secao">
       <h2 id="tituloForm">Confirme sua presença</h2>
-      <p class="apoio">O telefone identifica você — cada número confirma uma única vez. São 100 lugares no total: o mural, logo abaixo, mostra quantos ainda estão livres. Para alterar ou cancelar uma confirmação, é só solicitar à organização.</p>
+      <p class="apoio" id="apoioForm">O telefone identifica você — cada número confirma uma única vez. São 100 lugares no total: o mural, logo abaixo, mostra quantos ainda estão livres. Para alterar ou cancelar uma confirmação, é só solicitar à organização.</p>
+      <p class="apoio" id="apoioEspera" hidden>Os 100 lugares acabaram. Deixe seu nome e telefone: a fila anda pela ordem de chegada e a organização chama por telefone assim que abrir vaga.</p>
 
       <div class="painel-lotado" id="painelEsgotado" hidden>
         <div class="selo">Lotado</div>
         <h3>Chegamos aos 100 lugares</h3>
         <p id="esgotadoNovo">O Belga Pub é nosso das 12h às 16h, e nossa lotação são 100 pessoas — todas já têm nome no mural. Por isso as confirmações estão encerradas por aqui.</p>
         <p id="esgotadoJa" hidden>Sua presença está garantida — você entrou antes de a casa encher. Agora é só chegar no dia 26.09, às 12h.</p>
+        <p id="esgotadoNaFila" hidden></p>
+        <p id="esgotadoEspera">Mas a porta não fechou de vez: deixe nome e telefone na lista de espera aqui embaixo. Se alguém desistir, a organização chama pela ordem de chegada da fila.</p>
         <p class="dica" id="esgotadoDica">Precisa alterar ou cancelar uma confirmação? É só solicitar à organização.</p>
-        <p class="fechamento">Se alguém desistir, a vaga volta na hora — vale dar uma passada aqui de vez em quando.</p>
+        <p class="fechamento" id="esgotadoFechamento">Entrou na fila, entrou na torcida.</p>
       </div>
 
       <div class="form">
@@ -311,7 +345,7 @@ textarea{resize:vertical;min-height:76px}
           </div>
         </div>
 
-        <div class="campo">
+        <div class="campo" id="blocoCombo">
           <label class="rotulo" for="combo">Seu combo</label>
           <select id="combo">
             <option value="feijoada">Feijoada — R$ 50,00</option>
@@ -320,31 +354,33 @@ textarea{resize:vertical;min-height:76px}
           </select>
         </div>
 
-        <div class="campo">
+        <div class="campo" id="blocoDeps">
           <label class="rotulo">Companheiro(a) e filhos</label>
           <div id="listaDeps"></div>
           <button class="add" id="btnAdd" type="button">+ Adicionar companheiro(a) ou filho(a)</button>
           <div class="dica" id="dicaSozinho">Vindo sozinho(a)? Pode seguir direto.</div>
         </div>
 
-        <div class="campo">
+        <div class="campo" id="blocoRecado">
           <label class="rotulo" for="recado">Recado para a organização (opcional)</label>
           <textarea id="recado" placeholder="Restrição alimentar, chego mais tarde, levo o violão..."></textarea>
         </div>
 
-        <div class="valores">
+        <div class="valores" id="blocoValores">
           <div class="rot">Valor por pessoa</div>
           <ul id="listaValores"></ul>
           <div class="dica" id="avisoCrianca" hidden>Valor de criança ainda não definido no convite — a organização combina com você.</div>
         </div>
 
         <div class="aviso" id="avisoUltimos" hidden></div>
+        <div class="aviso" id="notaEspera" hidden>Na fila guardamos só nome e telefone. Combo e acompanhantes você escolhe na hora em que a vaga sair.</div>
 
         <div class="acoes">
           <button class="btn primario" id="btnConfirmar" type="button">Confirmar presença</button>
         </div>
 
-        <div class="aviso">Os nomes confirmados ficam visíveis no mural desta página. Telefone e recado só a organização vê na planilha. Para alterar ou cancelar depois de confirmar, é só solicitar à organização.</div>
+        <div class="aviso" id="avisoRodape">Os nomes confirmados ficam visíveis no mural desta página. Telefone e recado só a organização vê na planilha. Para alterar ou cancelar depois de confirmar, é só solicitar à organização.</div>
+        <div class="aviso" id="avisoRodapeEspera" hidden>Os nomes da fila ficam visíveis na lista de espera desta página, na ordem de chegada. O telefone só a organização vê na planilha.</div>
       </div>
     </section>
 
@@ -360,6 +396,30 @@ textarea{resize:vertical;min-height:76px}
       </div>
       <div id="mural" class="mural" hidden></div>
       <div id="vazio" class="vazio">Carregando o mural...</div>
+    </section>
+
+    <section class="secao" id="secaoEspera" hidden>
+      <h2>Lista de espera</h2>
+      <p class="apoio">Quem chegou depois de lotar fica aqui, na ordem de chegada.</p>
+
+      <div class="espera-topo">
+        <svg class="ampulheta" viewBox="0 0 44 62" aria-hidden="true">
+          <path class="vidro" d="M7 5h30M7 57h30"/>
+          <path class="vidro" d="M11 6c0 13 11 17 11 25 0 8-11 12-11 25"/>
+          <path class="vidro" d="M33 6c0 13-11 17-11 25 0 8 11 12 11 25"/>
+          <path class="areia" d="M14 12h16l-8 14z" opacity=".85"/>
+          <path class="areia" d="M13 52h18c-1-7-6-10-9-10s-8 3-9 10z"/>
+          <line class="grao" x1="22" y1="33" x2="22" y2="40"/>
+        </svg>
+        <div>
+          <div class="contador" id="contadorEspera">0</div>
+          <div class="contador-rot" id="contadorEsperaRot">na lista de espera</div>
+        </div>
+      </div>
+
+      <div class="fila" id="filaEspera" hidden></div>
+      <div class="vazio" id="vazioEspera" hidden>A fila ainda está vazia — a primeira senha pode ser a sua.</div>
+      <p class="legenda-fila">A ordem é a de chegada e vale por telefone: se alguém desistir, a organização liga para o primeiro da fila. Quem já está no mural não perde o lugar.</p>
     </section>
 
   </div>
@@ -391,8 +451,10 @@ const LIMITE_LUGARES = 100;
 let deps = [];
 let ocupado = false;
 let ultimoMural = [];
+let filaEspera = [];                             // lista de espera pública, na ordem de chegada
 let capacidade = { limite:LIMITE_LUGARES, ocupadas:0, vagas:LIMITE_LUGARES, esgotado:false };
 let jaConfirmado = false;                        // o telefone digitado já tem presença gravada
+let naEspera = null;                             // { posicao, nome, total } se o telefone está na fila
 const $ = (id) => document.getElementById(id);
 
 /* ------------------------------ utilidades ------------------------------ */
@@ -417,10 +479,14 @@ function avisar(texto, tipo){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 4200);
 }
-function carimbar(){
+function carimbar(texto, tipo){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const el = document.createElement('div');
-  el.className = 'carimbo'; el.innerHTML = '<b>CONFIRMADO</b>'; el.setAttribute('aria-hidden','true');
+  el.className = 'carimbo' + (tipo ? ' ' + tipo : '');
+  const b = document.createElement('b');
+  b.textContent = texto;
+  el.appendChild(b);
+  el.setAttribute('aria-hidden','true');
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 1500);
 }
@@ -457,13 +523,15 @@ function normalizarCapacidade(c){
   return { limite, ocupadas, vagas:Math.max(0,limite-ocupadas), esgotado:ocupadas >= limite };
 }
 
-/** Aplica uma resposta da API: mural, contagem e travas do formulário. */
+/** Aplica uma resposta da API: mural, fila, contagem e travas do formulário. */
 function aplicar(resposta){
   const r = resposta || {};
-  if(Array.isArray(r.mural)){ ultimoMural = r.mural; renderMural(r.mural); }
   capacidade = normalizarCapacidade(r.capacidade) ||
                (Array.isArray(r.mural) ? capacidadeDoMural(r.mural) : capacidade);
+  if(Array.isArray(r.mural)){ ultimoMural = r.mural; renderMural(r.mural); }
+  if(Array.isArray(r.espera)) filaEspera = r.espera;
   renderCapacidade();
+  renderEspera();
   atualizarTrava();
 }
 
@@ -489,33 +557,76 @@ function renderCapacidade(){
   }
 }
 
+/** Casa cheia e sem presença gravada: o formulário deixa de confirmar e passa
+    a inscrever na fila. Só nome e telefone — o resto se combina quando a vaga sai. */
+function modoEspera(){ return capacidade.esgotado && !jaConfirmado; }
+
 function atualizarTrava(){
   /* Confirmou uma vez, acabou: alterar ou cancelar é só por solicitação
      à organização — a página não edita nem exclui nada. */
-  const bloqueado = capacidade.esgotado || jaConfirmado;
+  const espera = modoEspera();
+  const naFila = !!naEspera;
+  /* Estar na fila só trava enquanto a casa continua cheia. Se abriu lugar,
+     quem esperava confirma pela página como qualquer um — e sai da fila. */
+  const esperando = naFila && capacidade.esgotado;
+  const travado = jaConfirmado || esperando;
 
+  /* painel de lotação */
   $('painelEsgotado').hidden = !capacidade.esgotado;
-  $('esgotadoNovo').hidden = jaConfirmado;
+  $('esgotadoNovo').hidden = jaConfirmado || naFila;
   $('esgotadoJa').hidden = !jaConfirmado;
+  $('esgotadoNaFila').hidden = jaConfirmado || !naFila;
+  $('esgotadoEspera').hidden = jaConfirmado || naFila;
   $('esgotadoDica').hidden = jaConfirmado;
+  $('esgotadoFechamento').hidden = jaConfirmado;
+  if(naFila && !jaConfirmado){
+    $('esgotadoNaFila').textContent =
+      'Você já está na lista de espera, na ' + naEspera.posicao + 'ª posição da fila. ' +
+      'Se abrir vaga, a organização liga para o número que você deixou.';
+  }
 
-  ['nome','combo','recado'].forEach(id => { $(id).disabled = jaConfirmado; });
+  /* o formulário troca de função conforme sobra ou não lugar */
+  $('apoioForm').hidden = espera;
+  $('apoioEspera').hidden = !espera;
+  ['blocoCombo','blocoDeps','blocoRecado','blocoValores'].forEach(id => { $(id).hidden = espera; });
+  $('notaEspera').hidden = !espera || naFila;
+  $('avisoRodape').hidden = espera;
+  $('avisoRodapeEspera').hidden = !espera;
+
+  $('tituloForm').textContent =
+    jaConfirmado ? 'Sua presença já está confirmada'
+    : esperando  ? 'Você está na lista de espera'
+    : naFila     ? 'Abriu lugar — confirme sua presença'
+    : espera     ? 'Entre na lista de espera'
+    :              'Confirme sua presença';
+
+  $('dicaTel').hidden = !jaConfirmado && !naFila;
+  if(jaConfirmado){
+    $('dicaTel').textContent = 'Este número já confirmou presença. Para alterar ou cancelar, solicite à organização.';
+  } else if(esperando){
+    $('dicaTel').textContent = 'Este número já está na fila, na ' + naEspera.posicao + 'ª posição.';
+  } else if(naFila){
+    $('dicaTel').textContent = 'Você é o ' + naEspera.posicao + 'º da fila e abriu lugar: confirme agora para garantir.';
+  }
+
+  ['nome','combo','recado'].forEach(id => { $(id).disabled = travado; });
   document.querySelectorAll('#listaDeps input, #listaDeps select, #listaDeps .remover')
-    .forEach(el => { el.disabled = jaConfirmado; });
+    .forEach(el => { el.disabled = travado; });
 
   const semEspacoExtra = (1 + deps.length) >= capacidade.vagas;
-  $('btnAdd').disabled = bloqueado || semEspacoExtra;
+  $('btnAdd').disabled = travado || capacidade.esgotado || semEspacoExtra;
   $('btnAdd').textContent = jaConfirmado
     ? 'Confirmação fechada — mudanças só com a organização'
-    : (bloqueado || semEspacoExtra)
+    : (capacidade.esgotado || semEspacoExtra)
       ? 'Sem lugares para mais acompanhantes'
       : '+ Adicionar companheiro(a) ou filho(a)';
 
-  $('btnConfirmar').disabled = ocupado || bloqueado;
+  $('btnConfirmar').disabled = ocupado || travado;
   $('btnConfirmar').textContent = ocupado ? 'Salvando...'
     : jaConfirmado ? 'Presença confirmada'
-    : capacidade.esgotado ? 'Lotação esgotada'
-    : 'Confirmar presença';
+    : esperando    ? 'Você está na fila'
+    : espera       ? 'Entrar na lista de espera'
+    :                'Confirmar presença';
 }
 
 /* ----------------------------- acompanhantes ---------------------------- */
@@ -627,6 +738,45 @@ function renderMural(lista){
   });
 }
 
+/* ---------------------------- lista de espera --------------------------- */
+/* Uma senha de papel por pessoa, penduradas no fio da fila. A ordem que
+   aparece é a ordem de chegada — o servidor já entrega assim. */
+function renderEspera(){
+  const total = filaEspera.length;
+  const fila = $('filaEspera');
+
+  /* A seção só existe quando há fila, ou quando a casa lotou e ela pode começar. */
+  $('secaoEspera').hidden = !total && !capacidade.esgotado;
+  $('contadorEspera').textContent = total;
+  $('vazioEspera').hidden = total > 0;
+  fila.hidden = !total;
+  fila.innerHTML = '';
+  if(!total) return;
+
+  filaEspera.forEach((e,i)=>{
+    const eu = !!naEspera && naEspera.posicao === e.posicao;
+    const el = document.createElement('div');
+    el.className = 'senha' + (i === 0 ? ' proximo' : '') + (eu ? ' voce' : '');
+    el.style.animationDelay = (Math.min(i,14)*55) + 'ms';
+
+    const num = document.createElement('div');
+    num.className = 'num'; num.textContent = e.posicao + 'º';
+    const picote = document.createElement('div');
+    picote.className = 'picote';
+    const quem = document.createElement('div');
+    quem.className = 'quem'; quem.textContent = e.nome;
+    el.appendChild(num); el.appendChild(picote); el.appendChild(quem);
+
+    if(i === 0 || eu){
+      const etiqueta = document.createElement('div');
+      etiqueta.className = 'etiqueta' + (eu ? ' eu' : '');
+      etiqueta.textContent = eu ? 'você' : 'próximo';
+      el.appendChild(etiqueta);
+    }
+    fila.appendChild(el);
+  });
+}
+
 async function carregarMural(){
   try{
     aplicar(await api('listar'));
@@ -653,34 +803,34 @@ $('tel').addEventListener('input', (ev)=>{
 });
 
 function marcarNovo(){
-  $('dicaTel').hidden = true;
   jaConfirmado = false;
-  $('tituloForm').textContent = 'Confirme sua presença';
+  naEspera = null;
   atualizarTrava();
 }
 
 async function consultar(telefone){
   try{
     const r = await api('consultar', { telefone });
+    marcarNovo();
     if(r.registro){
       /* Mostra o que está gravado, mas travado: mudança só via organização. */
       $('nome').value = r.registro.nome || '';
       $('combo').value = COMBOS[r.registro.combo] ? r.registro.combo : 'feijoada';
       deps = (r.registro.dependentes || []).map(d=>({ nome:d.nome, tipo:d.tipo, combo:d.combo }));
       $('recado').value = r.registro.recado || '';
-      $('dicaTel').hidden = false;
       jaConfirmado = true;
-      $('tituloForm').textContent = 'Sua presença já está confirmada';
       renderDeps();
-    } else {
-      marcarNovo();
+    } else if(r.naEspera){
+      naEspera = r.naEspera;
+      $('nome').value = r.naEspera.nome || '';
     }
     aplicar(r);
   }catch(err){ /* consulta é conveniência: falha não bloqueia o envio */ }
 }
 
 /* ------------------------------ confirmar ------------------------------ */
-function validar(){
+/* Telefone e nome: o que os dois caminhos, presença e fila, exigem igual. */
+function validarIdentidade(){
   let ok = true;
   const tel = soDigitos($('tel').value);
   $('erroTel').hidden = telefoneValido(tel);
@@ -688,6 +838,11 @@ function validar(){
   const nome = $('nome').value.trim();
   $('erroNome').hidden = nome.length >= 3;
   if(nome.length < 3){ $('erroNome').textContent = 'Escreva seu nome completo.'; ok = false; }
+  return ok;
+}
+
+function validar(){
+  let ok = validarIdentidade();
   if(deps.some(d=>!d.nome.trim())){ avisar('Falta o nome de algum acompanhante.','erro'); ok = false; }
 
   const pedidas = 1 + deps.filter(d=>d.nome.trim()).length;
@@ -701,8 +856,51 @@ function validar(){
   return ok;
 }
 
-$('btnConfirmar').addEventListener('click', async ()=>{
-  if(ocupado || !validar()) return;
+function validarEspera(){
+  let ok = validarIdentidade();
+  if(naEspera){
+    avisar('Este telefone já está na fila, na ' + naEspera.posicao + 'ª posição.','erro'); ok = false;
+  }
+  return ok;
+}
+
+/* Um botão só, dois destinos: enquanto sobra lugar ele confirma presença;
+   depois que lota, ele inscreve na fila. */
+$('btnConfirmar').addEventListener('click', ()=>{
+  if(ocupado) return;
+  if(modoEspera()) entrarNaFila(); else confirmarPresenca();
+});
+
+async function entrarNaFila(){
+  if(!validarEspera()) return;
+  ocupado = true;
+  atualizarTrava();
+  try{
+    const r = await api('esperar', {
+      telefone: soDigitos($('tel').value),
+      nome: $('nome').value.trim()
+    });
+    naEspera = r.naEspera || null;
+    carimbar('NA FILA','fila');
+    avisar('Pronto, ' + primeiroNome($('nome').value) + '. ' + (naEspera
+      ? 'Você é o ' + naEspera.posicao + 'º da lista de espera.'
+      : 'Você entrou na lista de espera.'));
+    aplicar(r);
+  }catch(err){
+    if(err.resposta){
+      if(err.resposta.jaConfirmado) jaConfirmado = true;
+      if(err.resposta.naEspera) naEspera = err.resposta.naEspera;
+    }
+    avisar('Não deu para entrar na fila: ' + err.message, 'erro');
+    aplicar(err.resposta);                       // se uma vaga abriu no meio do caminho, a página já mostra
+  }finally{
+    ocupado = false;
+    atualizarTrava();
+  }
+}
+
+async function confirmarPresenca(){
+  if(!validar()) return;
   ocupado = true;
   atualizarTrava();
   try{
@@ -715,10 +913,9 @@ $('btnConfirmar').addEventListener('click', async ()=>{
       recado: $('recado').value.trim()
     });
     jaConfirmado = true;
-    carimbar();
+    naEspera = null;                             // quem confirma sai da fila, e o servidor já apagou a senha
+    carimbar('CONFIRMADO');
     avisar('Presença confirmada, ' + primeiroNome($('nome').value) + '. Dia 26.09, 12h, no Belga Pub.');
-    $('dicaTel').hidden = false;
-    $('tituloForm').textContent = 'Sua presença já está confirmada';
     aplicar(r);
   }catch(err){
     if(err.resposta && err.resposta.jaConfirmado) jaConfirmado = true;
@@ -728,7 +925,7 @@ $('btnConfirmar').addEventListener('click', async ()=>{
     ocupado = false;
     atualizarTrava();
   }
-});
+}
 
 /* -------------------------------- início -------------------------------- */
 renderDeps();
