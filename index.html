@@ -83,6 +83,51 @@ h1 .l4{display:block;font-weight:700;font-size:clamp(30px,7vw,56px);letter-spaci
 .info .val{font-weight:800;font-size:23px;color:var(--azul-marca);margin-top:5px;letter-spacing:-.01em}
 .info .sub{font-size:12.5px;color:var(--tinta-fraca);margin-top:2px;font-weight:500}
 
+/* destaque de valores + pix, logo no topo */
+.destaque{position:relative;margin-top:38px;padding:clamp(26px,3.8vw,34px) clamp(18px,3.2vw,30px) clamp(20px,3vw,28px);
+  border:2px solid rgba(232,123,35,.42);border-radius:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(232,123,35,.1));
+  box-shadow:0 20px 42px -30px rgba(30,42,58,.9)}
+.destaque::before{content:'';position:absolute;top:-11px;left:50%;width:112px;height:22px;background:var(--fita);
+  transform:translateX(-50%) rotate(-1.4deg);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.destaque .selo{position:absolute;top:-14px;left:clamp(14px,4vw,26px);
+  font-weight:800;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#fff;
+  background:var(--laranja);border-radius:999px;padding:6px 15px;box-shadow:0 8px 16px -9px rgba(232,123,35,.95)}
+.destaque h2{margin:4px 0 0;font-weight:800;font-size:clamp(22px,4.2vw,32px);color:var(--azul-marca);letter-spacing:-.02em}
+
+.precos{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:14px;margin-top:20px}
+.preco-card{display:flex;flex-direction:column;background:#FFFCF6;border:2px solid var(--papel-borda);
+  border-radius:14px;padding:16px 16px 14px}
+.preco-card .nome{font-weight:600;font-size:15px;line-height:1.3}
+.preco-card .valor{font-weight:800;font-size:clamp(31px,6.2vw,40px);color:var(--laranja);letter-spacing:-.03em;margin-top:8px;line-height:1}
+.preco-card .por{font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca);margin-top:6px}
+.preco-card .casal{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  margin-top:auto;padding-top:12px;border-top:1px dashed var(--papel-borda)}
+.preco-card .casal em{font-style:normal;font-weight:600;font-size:13px;color:var(--tinta-fraca)}
+.preco-card .casal b{font-weight:800;font-size:19px;color:var(--azul-marca);letter-spacing:-.02em;white-space:nowrap}
+.recado-casal{margin:16px 0 0;padding:13px 16px;border-radius:12px;border-left:5px solid var(--laranja);
+  background:rgba(232,123,35,.13);font-size:14.5px;font-weight:600;line-height:1.55;color:var(--tinta)}
+
+.pix{margin-top:22px;padding:clamp(16px,2.6vw,20px);border:2px dashed var(--azul-marca);border-radius:14px;background:rgba(27,78,155,.06)}
+.pix-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pix-topo h3{margin:0;font-weight:800;font-size:clamp(18px,3.2vw,22px);color:var(--azul-marca);letter-spacing:-.02em}
+.pix-topo .banco{font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#fff;
+  background:#820AD1;border-radius:999px;padding:6px 13px}
+.pix .rotulo{margin-top:14px}
+.pix-chave{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+.pix-chave code{flex:1 1 260px;min-width:0;display:flex;align-items:center;background:#FFFCF6;
+  border:2px solid var(--papel-borda);border-radius:10px;padding:12px 13px;
+  font:600 14px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--tinta);
+  letter-spacing:.01em;overflow-wrap:anywhere}
+.copiar{flex:none;cursor:pointer;border:none;border-radius:10px;padding:12px 22px;
+  font:700 14.5px 'Montserrat',sans-serif;color:#fff;background:var(--azul-marca);
+  box-shadow:0 10px 22px -13px rgba(27,78,155,.95);transition:transform .14s,filter .14s,background .14s}
+.copiar:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.copiar.feito{background:#1E7A45}
+.pix-dados{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:15px}
+.pix-dados .rot{font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-fraca)}
+.pix-dados .val{font-weight:700;font-size:15.5px;color:var(--azul-marca);margin-top:3px;line-height:1.3}
+
 /* post-its */
 .postit{position:relative;padding:24px 18px 18px;border-radius:2px;color:var(--azul-escuro);
   font-family:'Caveat',cursive;font-weight:700;line-height:1.12;box-shadow:3px 7px 15px -7px rgba(30,42,58,.6);
@@ -97,10 +142,6 @@ h1 .l4{display:block;font-weight:700;font-size:clamp(30px,7vw,56px);letter-spaci
 .secao{margin-top:46px}
 .secao h2{font-weight:800;font-size:clamp(22px,4.2vw,32px);color:var(--azul-marca);letter-spacing:-.02em;margin:0}
 .apoio{margin:7px 0 0;color:var(--tinta-fraca);font-size:14.5px;max-width:58ch;font-weight:500}
-.cardapio{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:20px}
-.item{border:2px solid var(--papel-borda);border-radius:12px;padding:16px;background:rgba(255,255,255,.5)}
-.item .nome{font-weight:600;font-size:15px}
-.item .preco{font-weight:800;font-size:27px;color:var(--laranja);margin-top:6px;letter-spacing:-.02em}
 .nota{margin-top:12px;font-size:13px;color:var(--tinta-fraca);font-weight:500}
 
 .form{margin-top:22px;background:rgba(255,255,255,.6);border:2px solid var(--papel-borda);border-radius:14px;padding:clamp(18px,3.4vw,28px)}
@@ -226,6 +267,8 @@ textarea{resize:vertical;min-height:76px}
 @media (prefers-reduced-motion:reduce){.postit,.senha,.toast,.carimbo b,.ampulheta .grao{animation:none!important}.carimbo{display:none}.btn:hover,.mural .postit:hover{transform:none!important}}
 @media (max-width:620px){.rabisco{display:none}}
 @media (max-width:560px){.dupla{grid-template-columns:1fr}.faixa{gap:0 12px}
+  .copiar{flex:1 1 100%}
+  .destaque .selo{left:50%;transform:translateX(-50%);white-space:nowrap}
   .painel-lotado .selo{position:static;display:inline-block;transform:rotate(-2deg);margin-bottom:10px}
   .painel-lotado h3{padding-right:0}}
 </style>
@@ -296,23 +339,64 @@ textarea{resize:vertical;min-height:76px}
       <div class="info"><div class="rot">Local</div><div class="val">Belga Pub</div><div class="sub">Jardim América — Goiânia, GO</div></div>
     </div>
 
+    <!-- valores e pagamento: primeira coisa que o convidado precisa saber -->
+    <section class="destaque">
+      <div class="selo">Valores e pagamento</div>
+      <h2>Quanto custa e como pagar</h2>
+      <p class="apoio">O valor é <b>por pessoa</b> e cobre o consumo das 12h às 16h. Outras bebidas entram em comanda individual.</p>
+
+      <div class="precos">
+        <div class="preco-card">
+          <div class="nome">Feijoada</div>
+          <div class="valor">R$ 50</div>
+          <div class="por">por pessoa</div>
+          <div class="casal"><em>Casal (2 pessoas)</em><b>R$ 100</b></div>
+        </div>
+        <div class="preco-card">
+          <div class="nome">Feijoada + caipirinha</div>
+          <div class="valor">R$ 80</div>
+          <div class="por">por pessoa</div>
+          <div class="casal"><em>Casal (2 pessoas)</em><b>R$ 160</b></div>
+        </div>
+        <div class="preco-card">
+          <div class="nome">Feijoada + cerveja</div>
+          <div class="valor">R$ 100</div>
+          <div class="por">por pessoa</div>
+          <div class="casal"><em>Casal (2 pessoas)</em><b>R$ 200</b></div>
+        </div>
+      </div>
+
+      <p class="recado-casal">Vindo em casal? Cada pessoa escolhe o seu combo e paga o seu valor — some os dois antes de fazer o PIX. Dois combos de R$ 100 são R$ 200 no total.</p>
+
+      <div class="pix">
+        <div class="pix-topo">
+          <h3>Pague por PIX</h3>
+          <span class="banco">Nubank</span>
+        </div>
+
+        <div class="rotulo">Chave PIX (aleatória)</div>
+        <div class="pix-chave">
+          <code id="pixChave">563631c1-6dd1-4610-b364-4cb90e8a5943</code>
+          <button class="copiar" id="btnCopiarPix" type="button">Copiar chave</button>
+        </div>
+
+        <div class="pix-dados">
+          <div><div class="rot">Favorecida</div><div class="val">Ivone Amorim de Brito</div></div>
+          <div><div class="rot">Instituição</div><div class="val">Nubank</div></div>
+        </div>
+
+        <p class="nota">Pague o total do seu grupo de uma vez e guarde o comprovante. Depois confirme a presença no formulário abaixo.</p>
+      </div>
+
+      <p class="nota">Evento exclusivo para ex-colaboradores da PC Sistemas, companheiros(as) e filhos.</p>
+    </section>
+
     <div class="bordoes">
       <div class="postit az" style="transform:rotate(-1.6deg)">Te vira, bicho!</div>
       <div class="postit am" style="transform:rotate(1.4deg);animation-delay:90ms">Problema de um, problema de todos!</div>
       <div class="postit am" style="transform:rotate(-1.6deg);animation-delay:180ms">Faz devagar que tô com pressa!</div>
       <div class="postit az" style="transform:rotate(1.4deg);animation-delay:270ms">Uma vez PC, sempre PC</div>
     </div>
-
-    <section class="secao">
-      <h2>O que está incluso</h2>
-      <p class="apoio">Escolha por pessoa. Os valores valem para consumo das 12h às 16h; outras bebidas entram em comanda individual.</p>
-      <div class="cardapio">
-        <div class="item"><div class="nome">Feijoada</div><div class="preco">R$ 50,00</div></div>
-        <div class="item"><div class="nome">Feijoada + caipirinha</div><div class="preco">R$ 80,00</div></div>
-        <div class="item"><div class="nome">Feijoada + cerveja</div><div class="preco">R$ 100,00</div></div>
-      </div>
-      <p class="nota">Evento exclusivo para ex-colaboradores da PC Sistemas, companheiros(as) e filhos.</p>
-    </section>
 
     <section class="secao">
       <h2 id="tituloForm">Confirme sua presença</h2>
@@ -490,6 +574,54 @@ function carimbar(texto, tipo){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(), 1500);
 }
+
+/* ------------------------------ chave pix ------------------------------ */
+/* A API moderna só existe em contexto seguro (https). Sem ela, cai no
+   textarea escondido — que ainda funciona no celular e no arquivo local. */
+async function copiarTexto(texto){
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(texto);
+      return true;
+    }
+  }catch(e){ /* segue para o plano B */ }
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, texto.length);        // iOS só copia com o intervalo explícito
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  }catch(e){ return false; }
+}
+
+let voltaBotaoPix;
+$('btnCopiarPix').addEventListener('click', async ()=>{
+  const btn = $('btnCopiarPix');
+  const ok = await copiarTexto($('pixChave').textContent.trim());
+  if(ok){
+    btn.textContent = 'Chave copiada';
+    btn.classList.add('feito');
+    avisar('Chave PIX copiada. Cole no aplicativo do seu banco.');
+    clearTimeout(voltaBotaoPix);
+    voltaBotaoPix = setTimeout(()=>{
+      btn.textContent = 'Copiar chave';
+      btn.classList.remove('feito');
+    }, 2600);
+  }else{
+    /* Sem cópia automática, deixa a chave selecionada para copiar na mão. */
+    const sel = window.getSelection();
+    const faixa = document.createRange();
+    faixa.selectNodeContents($('pixChave'));
+    sel.removeAllRanges();
+    sel.addRange(faixa);
+    avisar('Seu navegador bloqueou a cópia. A chave está selecionada — copie manualmente.','erro');
+  }
+});
 
 /* -------------------------------- API ---------------------------------- */
 /* Sem cabeçalhos personalizados: o corpo vai como texto puro, o que evita a
