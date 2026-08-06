@@ -1,0 +1,51 @@
+{
+  "root": "\\\\?\\C:\\Atiz\\encontro-pc-sistemas",
+  "languages": [],
+  "manifests": [],
+  "frameworks": [],
+  "skeleton": [],
+  "modules": [],
+  "graph": {
+    "nodes": 0,
+    "edges": 0,
+    "cyclic": false,
+    "top_fan_in": [],
+    "top_fan_out": [],
+    "layers": [],
+    "touchpoints": []
+  },
+  "roles": [],
+  "conventions": [],
+  "coverage": {
+    "top_dirs": [
+      {
+        "dir": "(root)",
+        "code_files": 0,
+        "other_files": 3
+      }
+    ],
+    "skipped_build_dirs": [
+      ".claude",
+      ".git"
+    ],
+    "unsupported_exts": [
+      {
+        "ext": ".gs",
+        "count": 1
+      },
+      {
+        "ext": ".html",
+        "count": 1
+      },
+      {
+        "ext": ".json",
+        "count": 1
+      }
+    ],
+    "code_files_read": 0,
+    "non_utf8_skipped": 0
+  },
+  "projects": [],
+  "shared_contracts": [],
+  "detected_stacks": []
+}
